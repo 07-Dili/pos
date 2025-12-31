@@ -21,5 +21,15 @@ public class AuthController {
     public UserData signup(@Valid @RequestBody UserForm form) {
         return userDto.signup(form);
     }
+
+    @PostMapping("/login") 
+    public UserData login(@Valid @RequestBody UserForm form) {
+        return userDto.login(form);
+    }
+
+    @PostMapping("/logout") 
+    public void logout() {
+        userDto.logout();
+    }
 }
 

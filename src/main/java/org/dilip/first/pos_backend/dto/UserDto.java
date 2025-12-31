@@ -10,6 +10,8 @@ import org.dilip.first.pos_backend.util.helper.PasswordUtil;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.Valid;
+
 @Component
 public class UserDto {
 
@@ -28,6 +30,24 @@ public class UserDto {
 
         UserEntity entity = userApi.createUser(email, password, role);
         return convertEntityToUserData(entity);
+    }
+
+    public UserData login(UserForm form) {
+
+        String email = StringUtil.normalize(form.getEmail());
+        String password = form.getPassword();
+         
+        UserEntity entity = userApi.login(email, password);
+        if (entity == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        return convertEntityToUserData(entity);
+
+    }
+
+    public void logout() {
+        
     }
 
     private UserRole extractRoleFromEmail(String email) {
