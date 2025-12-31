@@ -1,19 +1,15 @@
 package org.dilip.first.pos_backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "clients")
+@Table( name = "clients",
+        uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
 @Getter
 @Setter
-public class ClientEntity {
+public class ClientEntity  extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

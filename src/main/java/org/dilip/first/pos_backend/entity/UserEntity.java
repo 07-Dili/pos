@@ -12,7 +12,7 @@ import org.dilip.first.pos_backend.constants.UserRole;
         name = "users",
         indexes = {@Index(name = "idx_users_email", columnList = "email", unique = true)}
 )
-public class UserEntity {
+public class UserEntity extends AbstractEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
