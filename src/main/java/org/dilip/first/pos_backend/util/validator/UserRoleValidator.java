@@ -6,7 +6,8 @@ import org.dilip.first.pos_backend.exception.ApiException;
 
 public class UserRoleValidator {
 
-    private UserRoleValidator() {}
+    private UserRoleValidator() {
+    }
 
     public static UserRole deriveRoleFromEmail(String email) {
 
@@ -20,6 +21,6 @@ public class UserRoleValidator {
             return UserRole.OPERATOR;
         }
 
-        throw new ApiException(ApiStatus.BAD_DATA, "Invalid role in email");
+        throw new ApiException(404, "Invalid role in email "+email);
     }
 }

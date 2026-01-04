@@ -10,19 +10,14 @@ import lombok.Setter;
 @Setter
 public class ClientForm {
 
-
-    @NotBlank
+    @NotBlank(message = "Client name is required")
     private String name;
 
-    @Email
-    @Pattern(
-            regexp = "^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z]+$\n",
-            message = "Email must be in the format name@role.com"
-    )
     @NotBlank
+    @Email(message = "Invalid email")
     private String email;
 
     @NotBlank
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String phone;
-
 }

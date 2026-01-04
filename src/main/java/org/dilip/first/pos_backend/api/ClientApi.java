@@ -2,7 +2,10 @@ package org.dilip.first.pos_backend.api;
 
 import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.entity.ClientEntity;
+import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +16,14 @@ import java.util.List;
 public class ClientApi {
 
     @Autowired
-    private  ClientDao clientDao;
+    private ClientDao clientDao;
 
-    public ClientEntity createClient(String name, String email, String phone) {
-        if (clientDao.findByEmail(email) != null) {
-            throw new RuntimeException("Client already exists");
+    public ClientEntity create(String name, String email, String phone) {
+
+        if (clientDao.findByName(name) != null) {
+            throw new ApiException(409, "Client already exists "+name);
         }
-        if (phone == null || !phone.matches("^(\\d{10}|\\+[1-9]\\d{1,14})$")) {
-            throw new RuntimeException("Invalid phone number");
-        }
-//        only 10 digits is enough
+
         ClientEntity entity = new ClientEntity();
         entity.setName(name);
         entity.setEmail(email);
@@ -31,8 +32,21 @@ public class ClientApi {
         return clientDao.save(entity);
     }
 
-    public List<ClientEntity> getAll() {
-        return clientDao.findAll();
+    public ClientEntity getById(Long id) {
+        return clientDao.findById(id)
+                .orElseThrow(() -> new ApiException(404, "Client not found "+id));
     }
-}
 
+    public List<ClientEntity> filter(Long id, String name) {
+        return clientDao.filter(id, name);
+    }
+
+    public Page<ClientEntity> getAll(Pageable pageable) {
+        return clientDao.findAll(pageable);
+    }
+
+    public Page<ClientEntity> searchByName(String name, Pageable pageable) {
+        return clientDao.searchByName(name, pageable);
+    }
+
+}

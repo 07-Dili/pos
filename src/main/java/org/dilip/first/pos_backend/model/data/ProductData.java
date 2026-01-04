@@ -5,11 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ClientData {
+public class ProductData {
 
     private Long id;
+    private Long clientId;
     private String name;
-    private String email;
-    private String phone;
-
+    private String barcode;
+    private Double mrp;
 }
+

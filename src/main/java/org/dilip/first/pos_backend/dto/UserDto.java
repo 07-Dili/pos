@@ -22,9 +22,7 @@ public class UserDto {
 
         String email = StringUtil.normalizeToLowerCase(form.getEmail());
         String hashedPassword = PasswordUtil.hashPassword(form.getPassword());
-        UserRole role = UserRoleValidator.deriveRoleFromEmail(email);
-
-        UserEntity entity = userApi.createUser(email, hashedPassword, role);
+        UserEntity entity = userApi.createUser(email, hashedPassword);
         return UserConversionUtil.convertEntityToData(entity);
     }
 

@@ -17,12 +17,12 @@ public class UserApi {
     @Autowired
     private UserDao userDao;
 
-    public UserEntity createUser(String email, String hashedPassword, UserRole role) {
+    public UserEntity createUser(String email, String hashedPassword) {
 
         if (userDao.findByEmail(email) != null) {
-            throw new ApiException(ApiStatus.RESOURCE_EXISTS, "User already exists");
+            throw new ApiException(409, "User already exists "+email);
         }
-
+        UserRole role = extractRoleFromEmail(email);
         UserEntity entity = new UserEntity();
         entity.setEmail(email);
         entity.setPassword(hashedPassword);
@@ -31,12 +31,31 @@ public class UserApi {
         return userDao.save(entity);
     }
 
+    private UserRole extractRoleFromEmail(String email) {
+
+        String rolePart = email.substring(email.indexOf('@') + 1).toLowerCase().trim();
+
+        if (rolePart.startsWith("operator")) {
+            return UserRole.OPERATOR;
+        }
+
+        if (rolePart.startsWith("supervisor")) {
+            return UserRole.SUPERVISOR;
+        }
+
+        throw new ApiException(400, "Invalid role in email. Allowed roles: OPERATOR, SUPERVISOR "+email);
+    }
+
     public UserEntity authenticateUser(String email, String rawPassword) {
 
         UserEntity user = userDao.findByEmail(email);
 
-        if (user == null || !PasswordUtil.verifyPassword(rawPassword, user.getPassword())) {
-            throw new ApiException(ApiStatus.AUTH_ERROR, "Invalid email or password");
+        if (user == null) {
+            throw new ApiException(404, "Invalid email "+email);
+        }
+
+        if (!PasswordUtil.verifyPassword(rawPassword, user.getPassword())) {
+            throw new ApiException(401, "Incorrect password "+rawPassword);
         }
 
         return user;

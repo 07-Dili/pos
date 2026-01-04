@@ -9,18 +9,12 @@ import java.util.List;
 @Getter
 public class ApiException extends RuntimeException {
 
-    private final ApiStatus status;
+    private final int status;
     private final List<FieldErrorData> errors;
 
-    public ApiException(ApiStatus status, String message) {
+    public ApiException(int statusCode, String message) {
         super(message);
-        this.status = status;
+        this.status = statusCode;
         this.errors = null;
-    }
-
-    public ApiException(ApiStatus status, String message, List<FieldErrorData> errors) {
-        super(message);
-        this.status = status;
-        this.errors = errors;
     }
 }

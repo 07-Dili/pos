@@ -1,0 +1,26 @@
+package org.dilip.first.pos_backend.model.form;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ProductForm {
+
+    @NotNull
+    private Long clientId;
+
+    @NotBlank
+    private String name;
+
+    @NotBlank
+    private String barcode;
+
+    @NotNull
+    @DecimalMin(value = "0.01", message = "MRP must be greater than 0")
+    private Double mrp;
+}
+

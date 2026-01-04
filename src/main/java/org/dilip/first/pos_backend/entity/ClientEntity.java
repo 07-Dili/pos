@@ -1,27 +1,37 @@
 package org.dilip.first.pos_backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Table( name = "clients",
-        uniqueConstraints = { @UniqueConstraint(columnNames = "name") })
 @Getter
 @Setter
-public class ClientEntity  extends AbstractEntity {
+@Entity
+@Table(
+        name = "clients",
+        indexes = {
+                @Index(name = "idx_client_name", columnList = "name"),
+                @Index(name = "idx_client_created_at", columnList = "createdAt")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_client_name", columnNames = "name"),
+                @UniqueConstraint(name = "uk_client_email", columnNames = "email")
+        }
+)
+public class ClientEntity extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false)
-    private String name;
+    private Long id;
 
     @Column(nullable = false, unique = true)
+    private String name;
+
+    @Email
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String phone;
-
 }

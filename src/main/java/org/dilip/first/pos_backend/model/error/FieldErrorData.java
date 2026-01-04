@@ -10,4 +10,3 @@ public class FieldErrorData {
     private String field;
     private String message;
 }
-
