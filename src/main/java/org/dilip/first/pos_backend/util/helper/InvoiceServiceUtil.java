@@ -1,7 +1,7 @@
-package org.dilip.first.pos_backend.util;
+package org.dilip.first.pos_backend.util.helper;
 
-import org.dilip.first.pos_backend.dto.InvoiceRequestDto;
-import org.dilip.first.pos_backend.dto.InvoiceResponseDto;
+import org.dilip.first.pos_backend.model.form.InvoiceRequestForm;
+import org.dilip.first.pos_backend.model.data.InvoiceResponseData;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,7 @@ public class InvoiceServiceUtil {
     @Value("${invoice.pdf.storage.path}")
     private String storagePath;
 
-    public String generateAndSavePdf(InvoiceRequestDto request) {
+    public String generateAndSavePdf(InvoiceRequestForm request) {
         try {
             String base64Pdf = callInvoiceApp(request);
 
@@ -40,16 +40,16 @@ public class InvoiceServiceUtil {
         }
     }
 
-    private String callInvoiceApp(InvoiceRequestDto request) {
+    private String callInvoiceApp(InvoiceRequestForm request) {
         try {
             String url = invoiceAppUrl + "/api/invoice/generate";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<InvoiceRequestDto> entity = new HttpEntity<>(request, headers);
+            HttpEntity<InvoiceRequestForm> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<InvoiceResponseDto> response = restTemplate.exchange( url, HttpMethod.POST, entity, InvoiceResponseDto.class);
+            ResponseEntity<InvoiceResponseData> response = restTemplate.exchange( url, HttpMethod.POST, entity, InvoiceResponseData.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return response.getBody().getBase64Pdf();

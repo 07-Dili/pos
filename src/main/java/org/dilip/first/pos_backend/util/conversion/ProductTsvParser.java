@@ -1,6 +1,5 @@
 package org.dilip.first.pos_backend.util.conversion;
 
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.form.ProductForm;
 import org.springframework.web.multipart.MultipartFile;

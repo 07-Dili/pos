@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.dto;
+package org.dilip.first.pos_backend.model.form;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceItemDto {
+public class InvoiceItemForm {
 
     private String name;
     private String barcode;

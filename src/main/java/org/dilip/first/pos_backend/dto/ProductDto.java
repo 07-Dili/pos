@@ -1,7 +1,6 @@
 package org.dilip.first.pos_backend.dto;
 
 import org.dilip.first.pos_backend.api.ProductApi;
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.data.ProductData;

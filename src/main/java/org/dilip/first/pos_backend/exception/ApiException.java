@@ -1,7 +1,6 @@
 package org.dilip.first.pos_backend.exception;
 
 import lombok.Getter;
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.model.error.FieldErrorData;
 
 import java.util.List;

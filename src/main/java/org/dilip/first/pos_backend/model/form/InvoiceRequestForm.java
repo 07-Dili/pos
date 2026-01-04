@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.dto;
+package org.dilip.first.pos_backend.model.form;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceRequestDto {
+public class InvoiceRequestForm {
 
     private Long orderId;
     private LocalDate orderDate;
     private Double totalAmount;
-    private List<InvoiceItemDto> items;
+    private List<InvoiceItemForm> items;
 }

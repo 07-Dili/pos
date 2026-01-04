@@ -1,6 +1,5 @@
 package org.dilip.first.pos_backend.api;
 
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.constants.UserRole;
 import org.dilip.first.pos_backend.dao.UserDao;
 import org.dilip.first.pos_backend.entity.UserEntity;

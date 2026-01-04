@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.util;
+package org.dilip.first.pos_backend.util.helper;
 
 import org.dilip.first.pos_backend.exception.ApiException;
 

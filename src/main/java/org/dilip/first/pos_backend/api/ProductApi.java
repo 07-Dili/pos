@@ -5,7 +5,6 @@ import org.dilip.first.pos_backend.dao.ProductDao;
 import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

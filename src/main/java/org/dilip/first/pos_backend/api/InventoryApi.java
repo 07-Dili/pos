@@ -1,6 +1,4 @@
 package org.dilip.first.pos_backend.api;
-
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.dao.InventoryDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
 import org.dilip.first.pos_backend.entity.InventoryEntity;

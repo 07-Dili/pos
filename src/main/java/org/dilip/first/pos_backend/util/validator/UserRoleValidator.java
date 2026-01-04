@@ -1,6 +1,5 @@
 package org.dilip.first.pos_backend.util.validator;
 
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.constants.UserRole;
 import org.dilip.first.pos_backend.exception.ApiException;
 

@@ -1,6 +1,5 @@
 package org.dilip.first.pos_backend.api;
 
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.OrderDao;
 import org.dilip.first.pos_backend.dao.OrderItemDao;

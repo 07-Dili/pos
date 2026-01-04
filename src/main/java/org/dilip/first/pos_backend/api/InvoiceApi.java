@@ -4,15 +4,15 @@ import org.dilip.first.pos_backend.dao.InvoiceDao;
 import org.dilip.first.pos_backend.dao.OrderDao;
 import org.dilip.first.pos_backend.dao.OrderItemDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
-import org.dilip.first.pos_backend.dto.InvoiceItemDto;
-import org.dilip.first.pos_backend.dto.InvoiceRequestDto;
+import org.dilip.first.pos_backend.model.form.InvoiceItemForm;
+import org.dilip.first.pos_backend.model.form.InvoiceRequestForm;
 import org.dilip.first.pos_backend.entity.InvoiceEntity;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.util.InvoiceFileUtil;
-import org.dilip.first.pos_backend.util.InvoiceServiceUtil;
+import org.dilip.first.pos_backend.util.helper.InvoiceFileUtil;
+import org.dilip.first.pos_backend.util.helper.InvoiceServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +48,7 @@ public class InvoiceApi {
         }
         OrderEntity order = orderDao.findById(orderId).orElseThrow(() -> new ApiException(404,"Order not found with id: " + orderId));
         List<OrderItemEntity> orderItems = orderItemDao.findByOrderId(orderId);
-        InvoiceRequestDto request = buildInvoiceRequest(order, orderItems);
+        InvoiceRequestForm request = buildInvoiceRequest(order, orderItems);
         String pdfPath = invoiceServiceUtil.generateAndSavePdf(request);
         InvoiceEntity invoice = new InvoiceEntity();
         invoice.setOrderId(orderId);
@@ -65,10 +65,10 @@ public class InvoiceApi {
         return InvoiceFileUtil.readInvoice(invoice.getPdfPath());
     }
 
-    private InvoiceRequestDto buildInvoiceRequest(OrderEntity order, List<OrderItemEntity> orderItems) {
+    private InvoiceRequestForm buildInvoiceRequest(OrderEntity order, List<OrderItemEntity> orderItems) {
 
-        List<InvoiceItemDto> items = orderItems.stream().map(this::convertToInvoiceItemDto).collect(Collectors.toList());
-        InvoiceRequestDto request = new InvoiceRequestDto();
+        List<InvoiceItemForm> items = orderItems.stream().map(this::convertToInvoiceItemForm).collect(Collectors.toList());
+        InvoiceRequestForm request = new InvoiceRequestForm();
         request.setOrderId(order.getId());
         request.setOrderDate(LocalDate.now());
         request.setTotalAmount(order.getTotalAmount());
@@ -76,14 +76,14 @@ public class InvoiceApi {
         return request;
     }
 
-    private InvoiceItemDto convertToInvoiceItemDto(OrderItemEntity orderItem) {
+    private InvoiceItemForm convertToInvoiceItemForm(OrderItemEntity orderItem) {
         ProductEntity product = productDao.findById(orderItem.getProductId()).orElse(null);
         String productName = product != null ? product.getName() : "Unknown Product";
-        InvoiceItemDto dto = new InvoiceItemDto();
-        dto.setName(productName);
-        dto.setBarcode(orderItem.getBarcode());
-        dto.setQuantity(orderItem.getQuantity());
-        dto.setSellingPrice(orderItem.getSellingPrice());
-        return dto;
+        InvoiceItemForm form = new InvoiceItemForm();
+        form.setName(productName);
+        form.setBarcode(orderItem.getBarcode());
+        form.setQuantity(orderItem.getQuantity());
+        form.setSellingPrice(orderItem.getSellingPrice());
+        return form;
     }
 }

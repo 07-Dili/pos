@@ -1,7 +1,6 @@
 package org.dilip.first.pos_backend.util.helper;
 
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.constants.ApiStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
