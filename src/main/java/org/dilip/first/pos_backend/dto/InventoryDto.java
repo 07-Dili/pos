@@ -55,9 +55,19 @@ public class InventoryDto {
     }
 
 
-    public List<FilterResponseData> filter(String barcode, String name, int page, int size) {
-        return inventoryApi.filter(barcode, name, page, size);
+    public List<FilterResponseData> filter(
+            Long productId,
+            String barcode,
+            String name,
+            int page,
+            int size) {
+
+        if (barcode != null && barcode.isBlank()) barcode = null;
+        if (name != null && name.isBlank()) name = null;
+
+        return inventoryApi.filter(productId, barcode, name, page, size);
     }
+
 
 
 

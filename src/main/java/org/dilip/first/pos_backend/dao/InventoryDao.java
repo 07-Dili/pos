@@ -16,28 +16,31 @@ public interface InventoryDao extends JpaRepository<InventoryEntity, Long> {
 
     @Query(
             value = """
-        SELECT
-            p.id AS productId,
-            p.client_id AS clientId,
-            p.name AS productName,
-            p.barcode AS barcode,
-            p.mrp AS mrp,
-            i.quantity AS quantity
-        FROM inventory i
-        JOIN products p ON i.product_id = p.id
-        WHERE (:barcode IS NULL OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :barcode, '%')))
-          AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
-        ORDER BY p.name
-        LIMIT :limit OFFSET :offset
-        """,
+    SELECT
+        p.id AS productId,
+        p.client_id AS clientId,
+        p.name AS productName,
+        p.barcode AS barcode,
+        p.mrp AS mrp,
+        i.quantity AS quantity
+    FROM inventory i
+    JOIN products p ON i.product_id = p.id
+    WHERE (:productId IS NULL OR p.id = :productId)
+      AND (:barcode IS NULL OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :barcode, '%')))
+      AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
+    ORDER BY p.name
+    LIMIT :limit OFFSET :offset
+    """,
             nativeQuery = true
     )
     List<FilterResponseData> filter(
+            @Param("productId") Long productId,
             @Param("barcode") String barcode,
             @Param("name") String name,
             @Param("limit") int limit,
             @Param("offset") int offset
     );
+
 
 
 

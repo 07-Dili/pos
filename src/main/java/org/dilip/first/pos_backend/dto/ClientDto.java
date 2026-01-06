@@ -56,14 +56,22 @@ public class ClientDto {
     public List<ClientData> search(ClientSearchForm form) {
 
         Long id = form.getId();
+
         String name = StringUtil.normalizeToLowerCase(form.getName());
         String email = StringUtil.normalizeToLowerCase(form.getEmail());
+
+        if (name != null && name.isBlank()) name = null;
+        if (email != null && email.isBlank()) email = null;
+
         int page = form.getPage();
         int size = form.getSize();
 
-        List<ClientEntity> entities = clientApi.search(id, name, email, page, size);
+        List<ClientEntity> entities =
+                clientApi.search(id, name, email, page, size);
+
         return entities.stream()
                 .map(EntityToData::convertClientEntityToData)
                 .toList();
     }
+
 }

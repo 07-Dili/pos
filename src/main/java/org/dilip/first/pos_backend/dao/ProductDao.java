@@ -14,22 +14,25 @@ public interface ProductDao extends JpaRepository<ProductEntity, Long> {
 
     @Query(
             value = """
-        SELECT * FROM products p
-        WHERE (:clientId IS NULL OR p.client_id = :clientId)
-          AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
-          AND (:barcode IS NULL OR p.barcode = :barcode)
-        ORDER BY p.id
-        LIMIT :limit OFFSET :offset
-        """,
+    SELECT * FROM products p
+    WHERE (:id IS NULL OR p.id = :id)
+      AND (:clientId IS NULL OR p.client_id = :clientId)
+      AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
+      AND (:barcode IS NULL OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :barcode, '%')))
+    ORDER BY p.id
+    LIMIT :limit OFFSET :offset
+    """,
             nativeQuery = true
     )
     List<ProductEntity> search(
+            @Param("id") Long id,
             @Param("clientId") Long clientId,
             @Param("name") String name,
             @Param("barcode") String barcode,
             @Param("limit") int limit,
             @Param("offset") int offset
     );
+
 
     @Query(
             value = """

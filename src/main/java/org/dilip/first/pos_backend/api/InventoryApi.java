@@ -78,10 +78,17 @@ public class InventoryApi {
         return inventoryDao.findAll(size, offset);
     }
 
-    public List<FilterResponseData> filter(String barcode, String name, int page, int size) {
+    public List<FilterResponseData> filter(
+            Long productId,
+            String barcode,
+            String name,
+            int page,
+            int size) {
+
         int offset = page * size;
-        return inventoryDao.filter(barcode, name, size, offset);
+        return inventoryDao.filter(productId, barcode, name, size, offset);
     }
+
 
 
 

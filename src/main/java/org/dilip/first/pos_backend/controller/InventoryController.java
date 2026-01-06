@@ -27,13 +27,15 @@ public class InventoryController {
 
     @GetMapping("/filter")
     public List<FilterResponseData> filter(
+            @RequestParam(required = false) Long productId,
             @RequestParam(required = false) String barcode,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        return inventoryDto.filter(barcode, name, page, size);
+        return inventoryDto.filter(productId, barcode, name, page, size);
     }
+
 
 
 

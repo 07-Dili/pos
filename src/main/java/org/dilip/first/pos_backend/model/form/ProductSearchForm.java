@@ -8,6 +8,7 @@ import lombok.Setter;
 public class ProductSearchForm {
 
     private Long clientId;
+    private Long id;
     private String name;
     private String barcode;
     private Integer page = 0;

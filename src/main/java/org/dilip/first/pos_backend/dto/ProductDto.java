@@ -37,16 +37,21 @@ public class ProductDto {
 
     public List<ProductData> search(ProductSearchForm form) {
 
+        Long id = form.getId();
         Long clientId = form.getClientId();
         String name = StringUtil.normalizeToLowerCase(form.getName());
         String barcode = StringUtil.normalizeToLowerCase(form.getBarcode());
         int page = form.getPage();
         int size = form.getSize();
 
-        List<ProductEntity> entities = productApi.search(clientId, name, barcode, page, size);
+        List<ProductEntity> entities =
+                productApi.search(id, clientId, name, barcode, page, size);
 
-        return entities.stream().map(EntityToData::convertProductEntityToData).toList();
+        return entities.stream()
+                .map(EntityToData::convertProductEntityToData)
+                .toList();
     }
+
 
     public ProductData update(Long id, ProductUpdateForm form) {
 

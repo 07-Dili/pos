@@ -50,11 +50,18 @@ public class ProductApi {
         return productDao.save(entity);
     }
 
-    public List<ProductEntity> search(Long clientId, String name, String barcode, int page, int size) {
+    public List<ProductEntity> search(
+            Long id,
+            Long clientId,
+            String name,
+            String barcode,
+            int page,
+            int size) {
 
         int offset = page * size;
-        return productDao.search(clientId, name, barcode, size, offset);
+        return productDao.search(id, clientId, name, barcode, size, offset);
     }
+
 
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
