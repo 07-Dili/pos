@@ -1,14 +1,16 @@
 package org.dilip.first.pos_backend.api;
+
 import org.dilip.first.pos_backend.dao.InventoryDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.dilip.first.pos_backend.model.data.FilterResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -21,30 +23,67 @@ public class InventoryApi {
     private ProductDao productDao;
 
     public InventoryEntity getById(Long id) {
-        return inventoryDao.findById(id).orElseThrow(() -> new ApiException(404, "Inventory not found "+id));
+        return inventoryDao.findById(id)
+                .orElseThrow(() -> new ApiException(404, "Inventory not found " + id));
+    }
+
+    public InventoryEntity create(Long productId, Long quantity) {
+
+        if (quantity == null || quantity < 0) {
+            throw new ApiException(400, "Invalid quantity " + quantity);
+        }
+
+        ProductEntity product = productDao.findById(productId)
+                .orElseThrow(() -> new ApiException(404, "Product not found " + productId));
+
+        if (inventoryDao.findByProductId(productId).isPresent()) {
+            throw new ApiException(409, "Inventory already exists for product " + productId);
+        }
+
+        InventoryEntity inventory = new InventoryEntity();
+        inventory.setProduct(product);
+        inventory.setQuantity(quantity);
+
+        return inventoryDao.save(inventory);
+    }
+
+    public InventoryEntity updateQuantity(Long productId, Long newQuantity) {
+
+        if (newQuantity < 0) {
+            throw new ApiException(400, "Quantity cannot be negative " + newQuantity);
+        }
+
+        InventoryEntity inventory = inventoryDao.findByProductId(productId)
+                .orElseThrow(() -> new ApiException(404, "Inventory not found for product " + productId));
+
+        inventory.setQuantity(newQuantity);
+        return inventoryDao.save(inventory);
     }
 
     public void reduce(Long productId, Long quantity) {
 
         InventoryEntity inventory = inventoryDao.findByProductId(productId)
-                .orElseThrow(() -> new ApiException(404, "Inventory not found for product "+productId));
+                .orElseThrow(() -> new ApiException(404, "Inventory not found for product " + productId));
 
         if (inventory.getQuantity() < quantity) {
-            throw new ApiException(403, "Insufficient inventory "+inventory.getQuantity());
+            throw new ApiException(403, "Insufficient inventory " + inventory.getQuantity());
         }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
-
         inventoryDao.save(inventory);
     }
 
-    public Page<InventoryEntity> filter(String barcode, String name, Pageable pageable) {
-        return inventoryDao.filter(barcode, name, pageable);
+    public List<InventoryEntity> getAll(int page, int size) {
+        int offset = page * size;
+        return inventoryDao.findAll(size, offset);
     }
 
-    public Page<InventoryEntity> getAll(Pageable pageable) {
-        return inventoryDao.findAll(pageable);
+    public List<FilterResponseData> filter(String barcode, String name, int page, int size) {
+        int offset = page * size;
+        return inventoryDao.filter(barcode, name, size, offset);
     }
+
+
 
     public void uploadInventoryRow(String barcode, Long quantity) {
 
@@ -52,12 +91,8 @@ public class InventoryApi {
             throw new ApiException(400, "Barcode is required");
         }
 
-        if (quantity == null) {
-            throw new ApiException(400, "Quantity is required");
-        }
-
-        if (quantity <= 0) {
-            throw new ApiException(400, "Quantity cannot be less than or equal to zero");
+        if (quantity == null || quantity <= 0) {
+            throw new ApiException(400, "Invalid quantity " + quantity);
         }
 
         ProductEntity product = productDao.findByBarcode(barcode);
@@ -74,18 +109,5 @@ public class InventoryApi {
 
         inventory.setQuantity(quantity);
         inventoryDao.save(inventory);
-    }
-
-    public InventoryEntity updateQuantity(Long productId, Long newQuantity) {
-
-        if (newQuantity < 0) {
-            throw new ApiException(400, "Quantity cannot be negative "+newQuantity);
-        }
-
-        InventoryEntity inventory = inventoryDao.findByProductId(productId)
-                .orElseThrow(() -> new ApiException(404, "Inventory not found for product "+productId));
-
-        inventory.setQuantity(newQuantity);
-        return inventoryDao.save(inventory);
     }
 }

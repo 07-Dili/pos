@@ -1,8 +1,10 @@
 package org.dilip.first.pos_backend.api;
 
+import io.micrometer.observation.ObservationFilter;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.OrderDao;
 import org.dilip.first.pos_backend.dao.OrderItemDao;
+import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -46,6 +49,11 @@ public class OrderApi {
 
     }
 
+    public List<OrderItemEntity> getItemsByOrderId(Long orderId) {
+        return orderItemDao.findByOrderId(orderId);
+    }
+
+
     public OrderEntity createOrder(Long userId) {
         OrderEntity order = new OrderEntity();
         order.setUserId(userId);
@@ -63,4 +71,7 @@ public class OrderApi {
         orderDao.save(order);
     }
 
+    public Page<OrderEntity> getAll(Pageable pageable) {
+        return orderDao.findAll(pageable);
+    }
 }

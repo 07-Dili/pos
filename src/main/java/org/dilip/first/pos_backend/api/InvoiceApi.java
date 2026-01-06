@@ -1,5 +1,6 @@
 package org.dilip.first.pos_backend.api;
 
+import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.InvoiceDao;
 import org.dilip.first.pos_backend.dao.OrderDao;
 import org.dilip.first.pos_backend.dao.OrderItemDao;
@@ -50,19 +51,19 @@ public class InvoiceApi {
         List<OrderItemEntity> orderItems = orderItemDao.findByOrderId(orderId);
         InvoiceRequestForm request = buildInvoiceRequest(order, orderItems);
         String pdfPath = invoiceServiceUtil.generateAndSavePdf(request);
+
+        order.setStatus(OrderStatus.INVOICED);
+        orderDao.save(order);
+
         InvoiceEntity invoice = new InvoiceEntity();
         invoice.setOrderId(orderId);
         invoice.setPdfPath(pdfPath);
+
         return invoiceDao.save(invoice);
     }
 
     public InvoiceEntity getByOrderId(Long orderId) {
         return invoiceDao.findByOrderId(orderId).orElseThrow(() -> new ApiException(404,"Invoice not found for order id: " + orderId));
-    }
-
-    public byte[] downloadInvoice(Long invoiceId) {
-        InvoiceEntity invoice = getByOrderId(invoiceId);
-        return InvoiceFileUtil.readInvoice(invoice.getPdfPath());
     }
 
     private InvoiceRequestForm buildInvoiceRequest(OrderEntity order, List<OrderItemEntity> orderItems) {

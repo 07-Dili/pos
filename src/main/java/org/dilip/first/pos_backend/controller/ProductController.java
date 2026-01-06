@@ -4,10 +4,9 @@ import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.ProductDto;
 import org.dilip.first.pos_backend.model.data.ProductData;
 import org.dilip.first.pos_backend.model.form.ProductForm;
+import org.dilip.first.pos_backend.model.form.ProductSearchForm;
 import org.dilip.first.pos_backend.model.form.ProductUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,13 +25,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public Page<ProductData> getAll(Pageable pageable) {
-        return productDto.getAll(pageable);
-    }
-
-    @GetMapping("/search")
-    public List<ProductData> searchByName(@RequestParam String name) {
-        return productDto.searchByName(name);
+    public List<ProductData> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return productDto.getAll(page, size);
     }
 
     @PutMapping("/{id}")
@@ -40,15 +36,13 @@ public class ProductController {
         return productDto.update(id, form);
     }
 
-    @GetMapping("/filter")
-    public Page<ProductData> filter(@RequestParam(required = false) Long clientId,
-            @RequestParam(required = false) String name, Pageable pageable) {
-        return productDto.filter(clientId, name, pageable);
+    @GetMapping("/search")
+    public List<ProductData> search(ProductSearchForm form) {
+        return productDto.search(form);
     }
 
-    @PostMapping(value = "/products/upload", consumes = "multipart/form-data")
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public void uploadProductMaster(@RequestParam("file") MultipartFile file) {
         productDto.uploadProductMaster(file);
     }
-
 }

@@ -3,6 +3,7 @@ package org.dilip.first.pos_backend.model.form;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class ProductForm {
     private String name;
 
     @NotBlank
+    @Size(min = 1, max = 10)
     private String barcode;
 
     @NotNull

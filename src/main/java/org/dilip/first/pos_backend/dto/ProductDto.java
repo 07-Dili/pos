@@ -5,15 +5,15 @@ import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.data.ProductData;
 import org.dilip.first.pos_backend.model.form.ProductForm;
+import org.dilip.first.pos_backend.model.form.ProductSearchForm;
 import org.dilip.first.pos_backend.model.form.ProductUpdateForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.conversion.ProductTsvParser;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertProductEntityToData;
@@ -35,26 +35,34 @@ public class ProductDto {
         return convertProductEntityToData(entity);
     }
 
+    public List<ProductData> search(ProductSearchForm form) {
+
+        Long clientId = form.getClientId();
+        String name = StringUtil.normalizeToLowerCase(form.getName());
+        String barcode = StringUtil.normalizeToLowerCase(form.getBarcode());
+        int page = form.getPage();
+        int size = form.getSize();
+
+        List<ProductEntity> entities = productApi.search(clientId, name, barcode, page, size);
+
+        return entities.stream().map(EntityToData::convertProductEntityToData).toList();
+    }
+
     public ProductData update(Long id, ProductUpdateForm form) {
 
         Long clientId = form.getClientId();
         String name = StringUtil.normalizeToLowerCase(form.getName());
+        String barcode = StringUtil.normalizeToLowerCase(form.getBarcode());
         Double mrp = form.getMrp();
 
-        ProductEntity entity = productApi.update(id, clientId, name, mrp);
+        ProductEntity entity = productApi.update(id, clientId, name, mrp, barcode);
         return convertProductEntityToData(entity);
     }
 
-    public List<ProductData> searchByName(String name) {
-        return productApi.searchByName(name).stream().map(EntityToData::convertProductEntityToData).toList();
-    }
+    public List<ProductData> getAll(int page, int size) {
 
-    public Page<ProductData> filter(Long clientId, String name, Pageable pageable) {
-        return productApi.filter(clientId, name, pageable).map(EntityToData::convertProductEntityToData);
-    }
-
-    public Page<ProductData> getAll(Pageable pageable) {
-        return productApi.getAll(pageable).map(EntityToData::convertProductEntityToData);
+        List<ProductEntity> entities = productApi.getAll(page, size);
+        return entities.stream().map(EntityToData::convertProductEntityToData).toList();
     }
 
     public void uploadProductMaster(MultipartFile file) {
@@ -69,6 +77,4 @@ public class ProductDto {
             create(form);
         }
     }
-
-
 }

@@ -4,11 +4,9 @@ import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.ClientDto;
 import org.dilip.first.pos_backend.model.data.ClientData;
 import org.dilip.first.pos_backend.model.form.ClientForm;
+import org.dilip.first.pos_backend.model.form.ClientSearchForm;
+import org.dilip.first.pos_backend.model.form.ClientUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +17,13 @@ public class ClientController {
 
     @Autowired
     private ClientDto clientDto;
+
+    @PutMapping("/{id}")
+    public ClientData update(
+            @PathVariable Long id,
+            @Valid @RequestBody ClientUpdateForm form) {
+        return clientDto.update(id, form);
+    }
 
     @PostMapping
     public ClientData create(@Valid @RequestBody ClientForm form) {
@@ -31,20 +36,14 @@ public class ClientController {
     }
 
     @GetMapping
-    public Page<ClientData> getAll(
-            @PageableDefault(page = 0, size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return clientDto.getAll(pageable);
-    }
-
-    @GetMapping("/filter")
-    public List<ClientData> filter(@RequestParam(required = false) Long id,
-            @RequestParam(required = false) String name) {
-        return clientDto.filter(id, name);
+    public List<ClientData> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return clientDto.getAll(page, size);
     }
 
     @GetMapping("/search")
-    public Page<ClientData> search(@RequestParam String name,
-            @PageableDefault(page = 0, size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return clientDto.searchByName(name, pageable);
+    public List<ClientData> search(ClientSearchForm form) {
+        return clientDto.search(form);
     }
 }

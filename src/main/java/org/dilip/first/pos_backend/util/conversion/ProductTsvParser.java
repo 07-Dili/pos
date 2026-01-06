@@ -9,8 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductTsvParser {
-
+public class ProductTsvParser{
     public static List<ProductForm> parse(MultipartFile file) {
 
         List<ProductForm> list = new ArrayList<>();
@@ -34,11 +33,9 @@ public class ProductTsvParser {
                 form.setMrp(Double.parseDouble(cols[3]));
                 list.add(form);
             }
-
         } catch (Exception e) {
             throw new ApiException(400, "Invalid TSV file "+file.getOriginalFilename());
         }
-
         return list;
     }
 }

@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InventoryData {
+public class
+InventoryData {
 
     private Long productId;
     private Long quantity;

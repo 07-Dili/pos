@@ -16,6 +16,9 @@ public class ProductUpdateForm {
     @NotBlank(message = "Product name is required")
     private String name;
 
+    @NotBlank(message = "Product barcode is required")
+    private String barcode;
+
     @NotNull(message = "MRP is required")
     @Positive(message = "MRP must be greater than zero")
     private Double mrp;

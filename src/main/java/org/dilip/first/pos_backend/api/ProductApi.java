@@ -2,14 +2,11 @@ package org.dilip.first.pos_backend.api;
 
 import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
-import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -37,11 +34,11 @@ public class ProductApi {
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
         if (!clientDao.existsById(clientId)) {
-            throw new ApiException(404, "Client does not exist "+clientId);
+            throw new ApiException(404, "Client does not exist " + clientId);
         }
 
         if (productDao.findByBarcode(barcode) != null) {
-            throw new ApiException(409, "Barcode already exists "+barcode);
+            throw new ApiException(409, "Barcode already exists " + barcode);
         }
 
         ProductEntity entity = new ProductEntity();
@@ -53,30 +50,37 @@ public class ProductApi {
         return productDao.save(entity);
     }
 
-    public List<ProductEntity> searchByName(String name) {
-        return productDao.findByNameContainingIgnoreCase(name);
+    public List<ProductEntity> search(Long clientId, String name, String barcode, int page, int size) {
+
+        int offset = page * size;
+        return productDao.search(clientId, name, barcode, size, offset);
     }
 
-    public Page<ProductEntity> filter(Long clientId, String name, Pageable pageable) {
-        return productDao.filter(clientId, name, pageable);
-    }
-
-    public ProductEntity update(Long id, Long clientId, String name, Double mrp) {
+    public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
         ProductEntity product = productDao.findById(id)
-                .orElseThrow(() -> new ApiException(404, "Product not found "+id));
+                .orElseThrow(() -> new ApiException(404, "Product not found " + id));
 
-        ClientEntity client = clientDao.findById(clientId)
-                .orElseThrow(() -> new ApiException(404, "Client does not exist "+clientId));
+        clientDao.findById(clientId)
+                .orElseThrow(() -> new ApiException(404, "Client does not exist " + clientId));
+
+        ProductEntity existingByBarcode = productDao.findByBarcode(barcode);
+
+        if (existingByBarcode != null && !existingByBarcode.getId().equals(id)) {
+            throw new ApiException(409, "Barcode already exists " + barcode);
+        }
 
         product.setClientId(clientId);
         product.setName(name);
         product.setMrp(mrp);
+        product.setBarcode(barcode);
 
         return productDao.save(product);
     }
 
-    public org.springframework.data.domain.Page<ProductEntity> getAll(Pageable pageable) {
-        return productDao.findAll(pageable);
+    public List<ProductEntity> getAll(int page, int size) {
+
+        int offset = page * size;
+        return productDao.findAllWithPagination(size, offset);
     }
 }

@@ -2,16 +2,17 @@ package org.dilip.first.pos_backend.dto;
 
 import org.dilip.first.pos_backend.api.InventoryApi;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
+import org.dilip.first.pos_backend.model.data.FilterResponseData;
 import org.dilip.first.pos_backend.model.data.InventoryData;
+import org.dilip.first.pos_backend.model.data.ProductInventoryData;
 import org.dilip.first.pos_backend.model.form.InventoryUpdateForm;
+import org.dilip.first.pos_backend.model.form.InventoryCreateForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.helper.TsvUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import org.dilip.first.pos_backend.model.data.ProductInventoryData;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertInventoryEntityToData;
@@ -31,23 +32,34 @@ public class InventoryDto {
             inventoryApi.uploadInventoryRow(barcode, quantity);
         }
     }
-    public InventoryData update(InventoryUpdateForm form) {
 
-        InventoryEntity entity = inventoryApi.updateQuantity( form.getProductId(), form.getQuantity() );
+    public InventoryData create(InventoryCreateForm form) {
+        InventoryEntity entity = inventoryApi.create(form.getProductId(), form.getQuantity());
         return convertInventoryEntityToData(entity);
     }
 
-    public Page<ProductInventoryData> getAll(Pageable pageable) {
-        return inventoryApi.getAll(pageable).map(EntityToData::convertInventoryEntityToCompleteProductData);
+    public InventoryData update(InventoryUpdateForm form) {
+        InventoryEntity entity = inventoryApi.updateQuantity(form.getProductId(), form.getQuantity());
+        return convertInventoryEntityToData(entity);
     }
 
     public InventoryData getById(Long id) {
         return convertInventoryEntityToData(inventoryApi.getById(id));
     }
 
-    public Page<InventoryData> filter(String barcode, String name, Pageable pageable) {
-        return inventoryApi.filter(barcode, name, pageable).map(EntityToData::convertInventoryEntityToData);
+    public List<ProductInventoryData> getAll(int page, int size) {
+        return inventoryApi.getAll(page, size)
+                .stream()
+                .map(EntityToData::convertInventoryEntityToCompleteProductData)
+                .toList();
     }
+
+
+    public List<FilterResponseData> filter(String barcode, String name, int page, int size) {
+        return inventoryApi.filter(barcode, name, page, size);
+    }
+
+
 
     private Long parseLong(String value) {
         if (value == null) return null;

@@ -5,11 +5,11 @@ import org.dilip.first.pos_backend.api.ClientApi;
 import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.model.data.ClientData;
 import org.dilip.first.pos_backend.model.form.ClientForm;
+import org.dilip.first.pos_backend.model.form.ClientSearchForm;
+import org.dilip.first.pos_backend.model.form.ClientUpdateForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +19,16 @@ public class ClientDto {
 
     @Autowired
     private ClientApi clientApi;
+
+    public ClientData update(Long id, @Valid ClientUpdateForm form) {
+
+        String name = StringUtil.normalizeToLowerCase(form.getName());
+        String email = StringUtil.normalizeToLowerCase(form.getEmail());
+        String phone = form.getPhone();
+
+        ClientEntity entity = clientApi.update(id, name, email, phone);
+        return EntityToData.convertClientEntityToData(entity);
+    }
 
     public ClientData create(@Valid ClientForm form) {
 
@@ -35,16 +45,25 @@ public class ClientDto {
         return EntityToData.convertClientEntityToData(entity);
     }
 
-    public List<ClientData> filter(Long id, String name) {
-        return clientApi.filter(id, name).stream().map(EntityToData::convertClientEntityToData).toList();
+    public List<ClientData> getAll(int page, int size) {
+
+        List<ClientEntity> entities = clientApi.getAll(page, size);
+        return entities.stream()
+                .map(EntityToData::convertClientEntityToData)
+                .toList();
     }
 
-    public Page<ClientData> getAll(Pageable pageable) {
-        return clientApi.getAll(pageable).map(EntityToData::convertClientEntityToData);
-    }
+    public List<ClientData> search(ClientSearchForm form) {
 
-    public Page<ClientData> searchByName(String name, Pageable pageable) {
-        String normalizedName = StringUtil.normalizeToLowerCase(name);
-        return clientApi.searchByName(normalizedName, pageable).map(EntityToData::convertClientEntityToData);
+        Long id = form.getId();
+        String name = StringUtil.normalizeToLowerCase(form.getName());
+        String email = StringUtil.normalizeToLowerCase(form.getEmail());
+        int page = form.getPage();
+        int size = form.getSize();
+
+        List<ClientEntity> entities = clientApi.search(id, name, email, page, size);
+        return entities.stream()
+                .map(EntityToData::convertClientEntityToData)
+                .toList();
     }
 }

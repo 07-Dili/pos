@@ -2,17 +2,16 @@ package org.dilip.first.pos_backend.controller;
 
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.InventoryDto;
+import org.dilip.first.pos_backend.model.data.FilterResponseData;
 import org.dilip.first.pos_backend.model.data.InventoryData;
+import org.dilip.first.pos_backend.model.data.ProductInventoryData;
 import org.dilip.first.pos_backend.model.form.InventoryUpdateForm;
+import org.dilip.first.pos_backend.model.form.InventoryCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.dilip.first.pos_backend.model.data.ProductInventoryData;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/inventory")
@@ -27,14 +26,27 @@ public class InventoryController {
     }
 
     @GetMapping("/filter")
-    public Page<InventoryData> filter(@RequestParam(required = false) String barcode,
-            @RequestParam(required = false) String name, Pageable pageable) {
-        return inventoryDto.filter(barcode, name, pageable);
+    public List<FilterResponseData> filter(
+            @RequestParam(required = false) String barcode,
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return inventoryDto.filter(barcode, name, page, size);
     }
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public void uploadInventory(@RequestParam MultipartFile file) {
-        inventoryDto.uploadInventory(file);
+
+
+    @GetMapping
+    public List<ProductInventoryData> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return inventoryDto.getAll(page, size);
+    }
+
+    @PostMapping
+    public InventoryData create(@Valid @RequestBody InventoryCreateForm form) {
+        return inventoryDto.create(form);
     }
 
     @PutMapping
@@ -42,9 +54,8 @@ public class InventoryController {
         return inventoryDto.update(form);
     }
 
-    @GetMapping
-    public Page<ProductInventoryData> getAll(
-            @PageableDefault(size = 10, sort = "product.name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return inventoryDto.getAll(pageable);
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public void uploadInventory(@RequestParam("file") MultipartFile file) {
+        inventoryDto.uploadInventory(file);
     }
 }

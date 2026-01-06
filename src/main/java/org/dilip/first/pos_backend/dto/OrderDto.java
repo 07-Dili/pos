@@ -4,7 +4,9 @@ import org.dilip.first.pos_backend.api.OrderApi;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.flow.OrderFlow;
+import org.dilip.first.pos_backend.model.data.ClientData;
 import org.dilip.first.pos_backend.model.data.OrderData;
+import org.dilip.first.pos_backend.model.data.OrderItemData;
 import org.dilip.first.pos_backend.model.form.OrderForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,25 @@ public class OrderDto {
     }
 
     public OrderData getById(Long id) {
-        return convertOrderEntityToOrderData(orderApi.getById(id));
-    }
 
+        OrderEntity order = orderApi.getById(id);
+        OrderData data = convertOrderEntityToOrderData(order);
+
+        data.setItems(
+                orderApi.getItemsByOrderId(id)
+                        .stream()
+                        .map(item -> {
+                            OrderItemData d = new OrderItemData();
+                            d.setBarcode(item.getBarcode());
+                            d.setQuantity(item.getQuantity());
+                            d.setSellingPrice(item.getSellingPrice());
+                            return d;
+                        })
+                        .toList()
+        );
+
+        return data;
+    }
 
 
     public Page<OrderData> getByDateRange(LocalDate from, LocalDate to, Pageable pageable) {
@@ -49,4 +67,7 @@ public class OrderDto {
         return orderApi.getByStatus(status, pageable).map(EntityToData::convertOrderEntityToOrderData);
     }
 
+    public Page<OrderData> getAll(Pageable pageable) {
+        return orderApi.getAll(pageable).map(EntityToData::convertOrderEntityToOrderData);
+    }
 }
