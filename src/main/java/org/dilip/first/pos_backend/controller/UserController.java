@@ -9,6 +9,8 @@ import org.dilip.first.pos_backend.model.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+
 @RestController
 @RequestMapping("/auth")
 public class UserController {
@@ -22,9 +24,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserData login(@Valid @RequestBody UserForm form) {
-        return userDto.login(form);
+    public UserData login(@Valid @RequestBody UserForm form, HttpServletRequest request) {
+
+        UserData user = userDto.login(form);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("role", user.getRole());
+        session.setAttribute("lastAccess", Instant.now());
+        return user;
     }
+
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {

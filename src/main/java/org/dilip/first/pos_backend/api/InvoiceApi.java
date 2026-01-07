@@ -71,7 +71,7 @@ public class InvoiceApi {
         List<InvoiceItemForm> items = orderItems.stream().map(this::convertToInvoiceItemForm).collect(Collectors.toList());
         InvoiceRequestForm request = new InvoiceRequestForm();
         request.setOrderId(order.getId());
-        request.setOrderDate(LocalDate.now());
+        request.setOrderDate(LocalDate.now().toString());
         request.setTotalAmount(order.getTotalAmount());
         request.setItems(items);
         return request;

@@ -13,7 +13,7 @@ import java.util.List;
 public class InvoiceRequestForm {
 
     private Long orderId;
-    private LocalDate orderDate;
+    private String orderDate;
     private Double totalAmount;
     private List<InvoiceItemForm> items;
 }

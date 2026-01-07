@@ -52,10 +52,11 @@ public interface OrderDao extends JpaRepository<OrderEntity, Long> {
             nativeQuery = true
     )
     List<OrderEntity> findByStatus(
-            @Param("status") OrderStatus status,
+            @Param("status") String status,
             @Param("limit") int limit,
             @Param("offset") int offset
     );
+
 
 
 

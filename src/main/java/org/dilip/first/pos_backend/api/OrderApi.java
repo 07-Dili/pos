@@ -35,7 +35,7 @@ public class OrderApi {
 
     public List<OrderEntity> getByStatus(OrderStatus status, int page, int size) {
         int offset = page * size;
-        return orderDao.findByStatus(status, size, offset);
+        return orderDao.findByStatus(status.name(), size, offset);
     }
 
     public List<OrderEntity> getByDateRange(

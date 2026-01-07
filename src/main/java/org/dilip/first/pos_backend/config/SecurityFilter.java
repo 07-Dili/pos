@@ -14,20 +14,30 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-
 @Component
 public class SecurityFilter implements Filter {
 
-    private static final long INACTIVE_LIMIT_SECONDS = 3600; //1hour
+    private static final long INACTIVE_LIMIT_SECONDS = 3600;
 
     @Override
-    public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        String path = req.getRequestURI();
 
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+
+        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+            res.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        String path = req.getRequestURI();
 
         if (isPublic(path)) {
             chain.doFilter(request, response);
@@ -62,16 +72,14 @@ public class SecurityFilter implements Filter {
     }
 
     private boolean isPublic(String path) {
-        return path.startsWith("/pos/login")
-                || path.startsWith("/pos/signup")
-                || path.startsWith("/pos/logout")
+        return path.startsWith("/pos/auth/login")
+                || path.startsWith("/pos/auth/signup")
+                || path.startsWith("/pos/auth/logout")
                 || path.startsWith("/pos/swagger-ui")
                 || path.startsWith("/pos/v3/api-docs");
     }
-
 
     private boolean isUploadApi(String path) {
         return path.contains("/products/upload") || path.contains("/inventory/upload");
     }
 }
-
