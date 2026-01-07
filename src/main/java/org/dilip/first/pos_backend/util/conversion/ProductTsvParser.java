@@ -2,6 +2,7 @@ package org.dilip.first.pos_backend.util.conversion;
 
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.form.ProductForm;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -34,7 +35,7 @@ public class ProductTsvParser{
                 list.add(form);
             }
         } catch (Exception e) {
-            throw new ApiException(400, "Invalid TSV file "+file.getOriginalFilename());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid TSV file "+file.getOriginalFilename());
         }
         return list;
     }

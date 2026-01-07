@@ -11,6 +11,7 @@ import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.conversion.ProductTsvParser;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,7 +76,7 @@ public class ProductDto {
         List<ProductForm> forms = ProductTsvParser.parse(file);
 
         if (forms.size() > 5000) {
-            throw new ApiException(400, "Maximum 5000 rows allowed. Found: " + forms.size());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Maximum 5000 rows allowed. Found: " + forms.size());
         }
 
         for (ProductForm form : forms) {

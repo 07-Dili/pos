@@ -1,5 +1,7 @@
 package org.dilip.first.pos_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.UserDto;
 import org.dilip.first.pos_backend.model.data.UserData;
@@ -23,4 +25,13 @@ public class UserController {
     public UserData login(@Valid @RequestBody UserForm form) {
         return userDto.login(form);
     }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+
 }

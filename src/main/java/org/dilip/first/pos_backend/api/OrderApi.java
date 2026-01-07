@@ -7,6 +7,7 @@ import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class OrderApi {
     private OrderItemDao orderItemDao;
 
     public OrderEntity getById(Long id) {
-        return orderDao.findById(id).orElseThrow(() -> new ApiException(404, "Order not found "+id));
+        return orderDao.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Order not found "+id));
     }
 
     public List<OrderEntity> getAll(int page, int size) {
@@ -44,7 +45,7 @@ public class OrderApi {
             int size) {
 
         if (to.isBefore(from)) {
-            throw new ApiException(400, "Invalid date range");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid date range");
         }
 
         int offset = page * size;

@@ -1,6 +1,7 @@
 package org.dilip.first.pos_backend.util.helper;
 
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -32,14 +33,14 @@ public class TsvUtil {
                 rows.add(line.split("\t"));
 
                 if (rows.size() > maxRows) {
-                    throw new ApiException(400, "File exceeds maximum allowed rows: " + maxRows);
+                    throw new ApiException(HttpStatus.BAD_REQUEST, "File exceeds maximum allowed rows: " + maxRows);
                 }
             }
 
             return rows;
 
         } catch (Exception e) {
-            throw new ApiException(400, "Invalid TSV file ");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid TSV file ");
         }
     }
 }

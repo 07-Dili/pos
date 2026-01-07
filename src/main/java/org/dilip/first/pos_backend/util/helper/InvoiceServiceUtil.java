@@ -36,7 +36,7 @@ public class InvoiceServiceUtil {
             return savePdfToFile(request.getOrderId(), pdfBytes);
 
         } catch (Exception e) {
-            throw new ApiException(500,"Failed to generate and save PDF: " + e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,"Failed to generate and save PDF: " + e.getMessage());
         }
     }
 
@@ -54,11 +54,11 @@ public class InvoiceServiceUtil {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return response.getBody().getBase64Pdf();
             } else {
-                throw new ApiException(500,"Invalid response from invoice app");
+                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,"Invalid response from invoice app");
             }
 
         } catch (Exception e) {
-            throw new ApiException(500,"Failed to call invoice app: " + e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,"Failed to call invoice app: " + e.getMessage());
         }
     }
 

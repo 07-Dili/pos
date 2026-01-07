@@ -14,6 +14,7 @@ import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.util.helper.InvoiceServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,7 @@ public class InvoiceApi {
         if (existingInvoice != null) {
             return existingInvoice;
         }
-        OrderEntity order = orderDao.findById(orderId).orElseThrow(() -> new ApiException(404,"Order not found with id: " + orderId));
+        OrderEntity order = orderDao.findById(orderId).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"Order not found with id: " + orderId));
         List<OrderItemEntity> orderItems = orderItemDao.findByOrderId(orderId);
         InvoiceRequestForm request = buildInvoiceRequest(order, orderItems);
         String pdfPath = invoiceServiceUtil.generateAndSavePdf(request);
@@ -62,7 +63,7 @@ public class InvoiceApi {
     }
 
     public InvoiceEntity getByOrderId(Long orderId) {
-        return invoiceDao.findByOrderId(orderId).orElseThrow(() -> new ApiException(404,"Invoice not found for order id: " + orderId));
+        return invoiceDao.findByOrderId(orderId).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"Invoice not found for order id: " + orderId));
     }
 
     private InvoiceRequestForm buildInvoiceRequest(OrderEntity order, List<OrderItemEntity> orderItems) {

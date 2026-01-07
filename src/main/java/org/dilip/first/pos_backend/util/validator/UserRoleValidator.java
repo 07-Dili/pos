@@ -2,6 +2,7 @@ package org.dilip.first.pos_backend.util.validator;
 
 import org.dilip.first.pos_backend.constants.UserRole;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.springframework.http.HttpStatus;
 
 public class UserRoleValidator {
 
@@ -20,6 +21,6 @@ public class UserRoleValidator {
             return UserRole.OPERATOR;
         }
 
-        throw new ApiException(404, "Invalid role in email "+email);
+        throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid role in email "+email);
     }
 }

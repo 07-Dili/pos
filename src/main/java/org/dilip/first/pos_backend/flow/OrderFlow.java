@@ -9,6 +9,7 @@ import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.form.OrderItemForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class OrderFlow {
             ProductEntity product = productApi.getByBarcode(form.getBarcode());
 
             if (form.getSellingPrice() < product.getMrp()) {
-                throw new ApiException(400,"Selling price below MRP "+form.getSellingPrice()+" < "+product.getMrp());
+                throw new ApiException(HttpStatus.BAD_REQUEST,"Selling price below MRP "+form.getSellingPrice()+" < "+product.getMrp());
             }
 
             inventoryApi.reduce(product.getId(), form.getQuantity());

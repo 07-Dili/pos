@@ -1,6 +1,7 @@
 package org.dilip.first.pos_backend.util.helper;
 
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.springframework.http.HttpStatus;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ public class InvoiceFileUtil {
             return filePath.toString();
 
         } catch (Exception e) {
-            throw new ApiException(500 ," Failed to generate invoice file");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR ," Failed to generate invoice file");
         }
     }
 
@@ -34,7 +35,7 @@ public class InvoiceFileUtil {
         try {
             return Files.readAllBytes(Paths.get(path));
         } catch (Exception e) {
-            throw new ApiException(500,"Failed to read invoice file");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,"Failed to read invoice file");
         }
     }
 }

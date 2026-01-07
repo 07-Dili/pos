@@ -6,6 +6,7 @@ import org.dilip.first.pos_backend.entity.UserEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.util.helper.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,7 @@ public class UserApi {
     public UserEntity createUser(String email, String hashedPassword) {
 
         if (userDao.findByEmail(email) != null) {
-            throw new ApiException(409, "User already exists "+email);
+            throw new ApiException(HttpStatus.CONFLICT, "User already exists "+email);
         }
         UserRole role = extractRoleFromEmail(email);
         UserEntity entity = new UserEntity();
@@ -42,7 +43,7 @@ public class UserApi {
             return UserRole.SUPERVISOR;
         }
 
-        throw new ApiException(400, "Invalid role in email. Allowed roles: OPERATOR, SUPERVISOR "+email);
+        throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid role in email. Allowed roles: OPERATOR, SUPERVISOR "+email);
     }
 
     public UserEntity authenticateUser(String email, String rawPassword) {
@@ -50,11 +51,11 @@ public class UserApi {
         UserEntity user = userDao.findByEmail(email);
 
         if (user == null) {
-            throw new ApiException(404, "Invalid email "+email);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid email "+email);
         }
 
         if (!PasswordUtil.verifyPassword(rawPassword, user.getPassword())) {
-            throw new ApiException(401, "Incorrect password "+rawPassword);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Incorrect password "+rawPassword);
         }
 
         return user;

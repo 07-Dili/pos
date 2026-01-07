@@ -7,6 +7,7 @@ import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.data.FilterResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +25,20 @@ public class InventoryApi {
 
     public InventoryEntity getById(Long id) {
         return inventoryDao.findById(id)
-                .orElseThrow(() -> new ApiException(404, "Inventory not found " + id));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Inventory not found " + id));
     }
 
     public InventoryEntity create(Long productId, Long quantity) {
 
         if (quantity == null || quantity < 0) {
-            throw new ApiException(400, "Invalid quantity " + quantity);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid quantity " + quantity);
         }
 
         ProductEntity product = productDao.findById(productId)
-                .orElseThrow(() -> new ApiException(404, "Product not found " + productId));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Product not found " + productId));
 
         if (inventoryDao.findByProductId(productId).isPresent()) {
-            throw new ApiException(409, "Inventory already exists for product " + productId);
+            throw new ApiException(HttpStatus.CONFLICT, "Inventory already exists for product " + productId);
         }
 
         InventoryEntity inventory = new InventoryEntity();
@@ -50,11 +51,11 @@ public class InventoryApi {
     public InventoryEntity updateQuantity(Long productId, Long newQuantity) {
 
         if (newQuantity < 0) {
-            throw new ApiException(400, "Quantity cannot be negative " + newQuantity);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Quantity cannot be negative " + newQuantity);
         }
 
         InventoryEntity inventory = inventoryDao.findByProductId(productId)
-                .orElseThrow(() -> new ApiException(404, "Inventory not found for product " + productId));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Inventory not found for product " + productId));
 
         inventory.setQuantity(newQuantity);
         return inventoryDao.save(inventory);
@@ -63,10 +64,10 @@ public class InventoryApi {
     public void reduce(Long productId, Long quantity) {
 
         InventoryEntity inventory = inventoryDao.findByProductId(productId)
-                .orElseThrow(() -> new ApiException(404, "Inventory not found for product " + productId));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Inventory not found for product " + productId));
 
         if (inventory.getQuantity() < quantity) {
-            throw new ApiException(403, "Insufficient inventory " + inventory.getQuantity());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory " + inventory.getQuantity());
         }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
@@ -95,16 +96,16 @@ public class InventoryApi {
     public void uploadInventoryRow(String barcode, Long quantity) {
 
         if (barcode == null || barcode.isBlank()) {
-            throw new ApiException(400, "Barcode is required");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Barcode is required");
         }
 
         if (quantity == null || quantity <= 0) {
-            throw new ApiException(400, "Invalid quantity " + quantity);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid quantity " + quantity);
         }
 
         ProductEntity product = productDao.findByBarcode(barcode);
         if (product == null) {
-            throw new ApiException(404, "Product not found for barcode: " + barcode);
+            throw new ApiException(HttpStatus.NOT_FOUND, "Product not found for barcode: " + barcode);
         }
 
         InventoryEntity inventory = inventoryDao.findByProductId(product.getId())
