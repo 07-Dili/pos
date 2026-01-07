@@ -1,18 +1,14 @@
 package org.dilip.first.pos_backend.api;
 
-import io.micrometer.observation.ObservationFilter;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.OrderDao;
 import org.dilip.first.pos_backend.dao.OrderItemDao;
-import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -31,23 +27,30 @@ public class OrderApi {
         return orderDao.findById(id).orElseThrow(() -> new ApiException(404, "Order not found "+id));
     }
 
-    public Page<OrderEntity> getByStatus(OrderStatus status, Pageable pageable) {
-        return orderDao.findByStatus(status, pageable);
+    public List<OrderEntity> getAll(int page, int size) {
+        int offset = page * size;
+        return orderDao.findAll(size, offset);
     }
 
-    public Page<OrderEntity> getByDateRange(OffsetDateTime from, OffsetDateTime to, Pageable pageable) {
+    public List<OrderEntity> getByStatus(OrderStatus status, int page, int size) {
+        int offset = page * size;
+        return orderDao.findByStatus(status, size, offset);
+    }
 
-        if (from == null || to == null) {
-            throw new ApiException(400, "From date and To date are required");
-        }
+    public List<OrderEntity> getByDateRange(
+            OffsetDateTime from,
+            OffsetDateTime to,
+            int page,
+            int size) {
 
         if (to.isBefore(from)) {
-            throw new ApiException(400, "'to' date must be equal to or after 'from' date "+from+" "+to);
+            throw new ApiException(400, "Invalid date range");
         }
 
-        return orderDao.findByDateRange(from, to, pageable);
-
+        int offset = page * size;
+        return orderDao.findByDateRange(from, to, size, offset);
     }
+
 
     public List<OrderItemEntity> getItemsByOrderId(Long orderId) {
         return orderItemDao.findByOrderId(orderId);
@@ -71,7 +74,5 @@ public class OrderApi {
         orderDao.save(order);
     }
 
-    public Page<OrderEntity> getAll(Pageable pageable) {
-        return orderDao.findAll(pageable);
-    }
+
 }

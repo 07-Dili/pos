@@ -4,20 +4,18 @@ import org.dilip.first.pos_backend.api.OrderApi;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.flow.OrderFlow;
-import org.dilip.first.pos_backend.model.data.ClientData;
 import org.dilip.first.pos_backend.model.data.OrderData;
 import org.dilip.first.pos_backend.model.data.OrderItemData;
 import org.dilip.first.pos_backend.model.form.OrderForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertOrderEntityToOrderData;
 
@@ -57,17 +55,35 @@ public class OrderDto {
     }
 
 
-    public Page<OrderData> getByDateRange(LocalDate from, LocalDate to, Pageable pageable) {
-        OffsetDateTime fromDateTime = from.atStartOfDay().atOffset(ZoneOffset.UTC);
-        OffsetDateTime toDateTime = to.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC);
-        return orderApi.getByDateRange(fromDateTime, toDateTime, pageable).map(EntityToData::convertOrderEntityToOrderData);
+    public List<OrderData> getByDateRange(
+            LocalDate from,
+            LocalDate to,
+            int page,
+            int size) {
+
+        OffsetDateTime fromDT = from.atStartOfDay().atOffset(ZoneOffset.UTC);
+        OffsetDateTime toDT = to.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC);
+
+        return orderApi.getByDateRange(fromDT, toDT, page, size)
+                .stream()
+                .map(EntityToData::convertOrderEntityToOrderData)
+                .toList();
     }
 
-    public Page<OrderData> getByStatus(OrderStatus status,Pageable pageable) {
-        return orderApi.getByStatus(status, pageable).map(EntityToData::convertOrderEntityToOrderData);
+
+    public List<OrderData> getByStatus(OrderStatus status, int page, int size) {
+        return orderApi.getByStatus(status, page, size)
+                .stream()
+                .map(EntityToData::convertOrderEntityToOrderData)
+                .toList();
     }
 
-    public Page<OrderData> getAll(Pageable pageable) {
-        return orderApi.getAll(pageable).map(EntityToData::convertOrderEntityToOrderData);
+
+    public List<OrderData> getAll(int page, int size) {
+        return orderApi.getAll(page, size)
+                .stream()
+                .map(EntityToData::convertOrderEntityToOrderData)
+                .toList();
     }
+
 }

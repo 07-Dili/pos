@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertInventoryEntityToData;
+import static org.dilip.first.pos_backend.util.helper.IntegerUtil.parseLong;
 
 @Component
 public class InventoryDto {
@@ -68,15 +69,4 @@ public class InventoryDto {
         return inventoryApi.filter(productId, barcode, name, page, size);
     }
 
-
-
-
-    private Long parseLong(String value) {
-        if (value == null) return null;
-        try {
-            return Long.parseLong(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
 }

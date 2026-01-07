@@ -25,9 +25,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductData> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public List<ProductData> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return productDto.getAll(page, size);
     }
 

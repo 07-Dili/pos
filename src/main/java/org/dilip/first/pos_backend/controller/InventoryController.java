@@ -36,13 +36,8 @@ public class InventoryController {
         return inventoryDto.filter(productId, barcode, name, page, size);
     }
 
-
-
-
     @GetMapping
-    public List<ProductInventoryData> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public List<ProductInventoryData> getAll( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return inventoryDto.getAll(page, size);
     }
 

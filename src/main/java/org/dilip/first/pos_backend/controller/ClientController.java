@@ -19,9 +19,7 @@ public class ClientController {
     private ClientDto clientDto;
 
     @PutMapping("/{id}")
-    public ClientData update(
-            @PathVariable Long id,
-            @Valid @RequestBody ClientUpdateForm form) {
+    public ClientData update( @PathVariable Long id, @Valid @RequestBody ClientUpdateForm form) {
         return clientDto.update(id, form);
     }
 
@@ -36,9 +34,7 @@ public class ClientController {
     }
 
     @GetMapping
-    public List<ClientData> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public List<ClientData> getAll( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return clientDto.getAll(page, size);
     }
 

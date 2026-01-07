@@ -1,19 +1,15 @@
 package org.dilip.first.pos_backend.controller;
 
-import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dto.OrderDto;
-import org.dilip.first.pos_backend.model.data.ClientData;
 import org.dilip.first.pos_backend.model.data.OrderData;
 import org.dilip.first.pos_backend.model.form.OrderForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -23,9 +19,13 @@ public class OrderController {
     private OrderDto orderDto;
 
     @GetMapping
-    public Page<OrderData> getAll(@PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pageable) {
-        return orderDto.getAll(pageable);
+    public List<OrderData> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return orderDto.getAll(page, size);
     }
+
 
     @PostMapping
     public OrderData create(@RequestHeader("userId") Long userId, @Valid @RequestBody OrderForm form) {
@@ -33,9 +33,14 @@ public class OrderController {
     }
 
     @GetMapping("/status")
-    public Page<OrderData> getByStatus(@RequestParam OrderStatus status, Pageable pageable) {
-        return orderDto.getByStatus(status, pageable);
+    public List<OrderData> getByStatus(
+            @RequestParam OrderStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return orderDto.getByStatus(status, page, size);
     }
+
 
     @GetMapping("/{id}")
     public OrderData getById(@PathVariable Long id) {
@@ -43,8 +48,14 @@ public class OrderController {
     }
 
     @GetMapping("/by-date")
-    public Page<OrderData> getByDateRange(@RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,@RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to, Pageable pageable) {
-        return orderDto.getByDateRange(from, to, pageable);
+    public List<OrderData> getByDateRange(
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return orderDto.getByDateRange(from, to, page, size);
     }
+
 
 }
