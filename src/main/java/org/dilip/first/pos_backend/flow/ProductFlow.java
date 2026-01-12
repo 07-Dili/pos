@@ -5,6 +5,7 @@ import org.dilip.first.pos_backend.api.ClientApi;
 import org.dilip.first.pos_backend.api.ProductApi;
 import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
+import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ProductFlow {
 
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
-        if (clientDao.findById(clientId) == null) {
+        if (clientDao.findById(ClientEntity.class,clientId) == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
         }
 
@@ -38,7 +39,7 @@ public class ProductFlow {
 
     public ProductEntity update(ProductEntity product, Long clientId, String name, Double mrp, String barcode) {
 
-        if (clientDao.findById(clientId) == null) {
+        if (clientDao.findById(ClientEntity.class,clientId) == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
         }
 

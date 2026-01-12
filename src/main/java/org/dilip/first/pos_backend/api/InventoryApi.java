@@ -23,7 +23,7 @@ public class InventoryApi {
     private InventoryFlow inventoryFlow;
 
     public InventoryEntity getById(Long id) {
-        InventoryEntity inventory = inventoryDao.findById(id);
+        InventoryEntity inventory = inventoryDao.findById(InventoryEntity.class, id);
         if (inventory == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found " + id);
         }
@@ -70,7 +70,7 @@ public class InventoryApi {
     }
 
     public List<InventoryEntity> getAll(int page, int size) {
-        return inventoryDao.findAll(page, size);
+        return inventoryDao.findAll(InventoryEntity.class,page, size);
     }
 
     public List<InventoryFilterResponseData> filter(Long productId, String barcode, String name, int page, int size) {

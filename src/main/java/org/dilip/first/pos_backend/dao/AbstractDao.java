@@ -9,18 +9,12 @@ public abstract class AbstractDao<T> {
     @PersistenceContext
     protected EntityManager em;
 
-    private final Class<T> entityClass;
-
-    protected AbstractDao(Class<T> entityClass) {
-        this.entityClass = entityClass;
+    public T findById(Class<T> cla,Long id) {
+        return em.find(cla, id);
     }
 
-    public T findById(Long id) {
-        return em.find(entityClass, id);
-    }
-
-    public List<T> findAll(int page, int size) {
-        return em.createQuery("SELECT e FROM " + entityClass.getSimpleName() + " e", entityClass)
+    public List<T> findAll(Class<T>cla,int page, int size) {
+        return em.createQuery("SELECT e FROM " + cla.getSimpleName() + " e", cla)
                 .setFirstResult(page * size)
                 .setMaxResults(size)
                 .getResultList();

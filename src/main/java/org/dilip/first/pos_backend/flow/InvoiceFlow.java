@@ -44,7 +44,7 @@ public class InvoiceFlow {
             return existingInvoice;
         }
 
-        OrderEntity order = orderDao.findById(orderId);
+        OrderEntity order = orderDao.findById(OrderEntity.class,orderId);
         if (order == null) {
             throw new ApiException( HttpStatus.BAD_REQUEST, "Order not found with id: " + orderId);
         }
@@ -79,7 +79,7 @@ public class InvoiceFlow {
 
     private InvoiceItemForm toInvoiceItem(OrderItemEntity orderItem) {
 
-        ProductEntity product = productDao.findById(orderItem.getProductId());
+        ProductEntity product = productDao.findById(ProductEntity.class,orderItem.getProductId());
         String productName = product != null ? product.getName() : "Unknown Product";
 
         InvoiceItemForm form = new InvoiceItemForm();

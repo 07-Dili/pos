@@ -22,7 +22,7 @@ public class InventoryFlow {
 
     public InventoryEntity create(Long productId, Long quantity) {
 
-        ProductEntity product = productDao.findById(productId);
+        ProductEntity product = productDao.findById(ProductEntity.class,productId);
         if (product == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found " + productId);
         }

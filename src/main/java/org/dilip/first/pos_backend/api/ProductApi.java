@@ -30,7 +30,7 @@ public class ProductApi {
     }
 
     public ProductEntity getById(Long id) {
-        ProductEntity product = productDao.findById(id);
+        ProductEntity product = productDao.findById(ProductEntity.class, id);
         if (product == null) {
             throw new ApiException( HttpStatus.BAD_REQUEST, "Product not found with id: " + id);
         }
@@ -49,7 +49,7 @@ public class ProductApi {
 
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
-        ProductEntity product = productDao.findById(id);
+        ProductEntity product = productDao.findById(ProductEntity.class,id);
         if (product == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
         }
@@ -63,7 +63,7 @@ public class ProductApi {
     }
 
     public List<ProductEntity> getAll(int page, int size) {
-        return productDao.findAll(page, size);
+        return productDao.findAll(ProductEntity.class,page, size);
     }
 
     public List<ProductEntity> search(Long id, Long clientId, String name, String barcode, int page, int size) {

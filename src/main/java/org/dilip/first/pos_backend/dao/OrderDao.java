@@ -10,9 +10,6 @@ import java.util.List;
 @Repository
 public class OrderDao extends AbstractDao<OrderEntity> {
 
-    public OrderDao() {
-        super(OrderEntity.class);
-    }
 
     static final String FIND_BY_STATUS_QUERY = """
         SELECT o FROM OrderEntity o WHERE o.status = :status
@@ -26,7 +23,7 @@ public class OrderDao extends AbstractDao<OrderEntity> {
         """;
 
     public List<OrderEntity> getAll(int page, int size) {
-        return findAll(page, size);
+        return findAll(OrderEntity.class,page, size);
     }
 
     public List<OrderEntity> findByStatus(OrderStatus status, int page, int size) {

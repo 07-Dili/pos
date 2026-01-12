@@ -9,9 +9,6 @@ import java.util.List;
 @Repository
 public class InventoryDao extends AbstractDao<InventoryEntity> {
 
-    public InventoryDao() {
-        super(InventoryEntity.class);
-    }
 
     static final String FIND_BY_PRODUCT_ID_QUERY = "SELECT i FROM InventoryEntity i WHERE i.product.id = :productId";
 

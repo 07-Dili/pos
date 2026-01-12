@@ -1,4 +1,2 @@
-barcode	quantity
-CHARGER-USB-18W	5
-CHARGER-FAST-25W	10
-CHARGER-TYPEC-65W	15
+client	productname	barcode	mrp
+12	asus_vivobook	vivo	50000

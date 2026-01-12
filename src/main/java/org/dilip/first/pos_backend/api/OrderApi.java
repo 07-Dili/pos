@@ -20,7 +20,7 @@ public class OrderApi {
     private OrderDao orderDao;
 
     public OrderEntity getById(Long orderId) {
-        OrderEntity order = orderDao.findById(orderId);
+        OrderEntity order = orderDao.findById(OrderEntity.class,orderId);
         if (order == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Order not found with id: " + orderId);
         }

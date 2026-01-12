@@ -9,9 +9,6 @@ import java.util.List;
 @Repository
 public class ProductDao extends AbstractDao<ProductEntity> {
 
-    public ProductDao() {
-        super(ProductEntity.class);
-    }
 
     static final String FIND_BY_BARCODE_QUERY = "SELECT p FROM ProductEntity p WHERE LOWER(p.barcode) = LOWER(:barcode)";
 

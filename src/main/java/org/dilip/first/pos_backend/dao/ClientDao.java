@@ -8,11 +8,6 @@ import java.util.List;
 @Repository
 public class ClientDao extends AbstractDao<ClientEntity> {
 
-
-    public ClientDao() {
-        super(ClientEntity.class);
-    }
-
     static final String FIND_BY_NAME_QUERY = "SELECT c FROM ClientEntity c WHERE LOWER(c.name) = LOWER(:name)";
 
     static final String FIND_BY_EMAIL_QUERY = " SELECT c FROM ClientEntity c WHERE LOWER(c.email) = LOWER(:email)";

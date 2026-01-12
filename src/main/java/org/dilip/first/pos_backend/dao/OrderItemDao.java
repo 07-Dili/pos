@@ -8,9 +8,6 @@ import java.util.List;
 @Repository
 public class OrderItemDao extends AbstractDao<OrderItemEntity> {
 
-    public OrderItemDao() {
-        super(OrderItemEntity.class);
-    }
 
     public List<OrderItemEntity> findByOrderId(Long orderId) {
         return em.createQuery(

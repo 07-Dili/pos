@@ -63,7 +63,7 @@ public class ClientApi {
 
     public ClientEntity getById(Long id) {
 
-        ClientEntity client = clientDao.findById(id);
+        ClientEntity client = clientDao.findById(ClientEntity.class, id);
         if (client == null) {
             throw new ApiException( HttpStatus.BAD_REQUEST, "Client not found " + id);
         }
@@ -71,7 +71,7 @@ public class ClientApi {
     }
 
     public List<ClientEntity> getAll(int page, int size) {
-        return clientDao.findAll(page, size);
+        return clientDao.findAll(ClientEntity.class,page, size);
     }
 
     public List<ClientEntity> search(Long id, String name, String email, int page, int size) {
