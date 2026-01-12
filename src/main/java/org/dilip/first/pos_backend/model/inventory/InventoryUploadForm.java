@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.model.form;
+package org.dilip.first.pos_backend.model.inventory;
 
 import lombok.Getter;
 import lombok.Setter;

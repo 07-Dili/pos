@@ -1,11 +1,11 @@
-package org.dilip.first.pos_backend.model.data;
+package org.dilip.first.pos_backend.model.inventory;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class ProductInventoryData {
+@AllArgsConstructor
+public class InventoryFilterResponseData {
 
     private Long productId;
     private Long clientId;
@@ -13,5 +13,5 @@ public class ProductInventoryData {
     private String barcode;
     private Double mrp;
     private Long quantity;
-}
 
+}

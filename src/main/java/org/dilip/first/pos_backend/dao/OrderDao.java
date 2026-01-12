@@ -2,62 +2,47 @@ package org.dilip.first.pos_backend.dao;
 
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.entity.OrderEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public interface OrderDao extends JpaRepository<OrderEntity, Long> {
+@Repository
+public class OrderDao extends AbstractDao<OrderEntity> {
 
-    @Query(
-            value = """
-    SELECT * FROM orders
-    ORDER BY created_at DESC
-    LIMIT :limit OFFSET :offset
-    """,
-            nativeQuery = true
-    )
-    List<OrderEntity> findAll(
-            @Param("limit") int limit,
-            @Param("offset") int offset
-    );
+    public OrderDao() {
+        super(OrderEntity.class);
+    }
 
+    static final String FIND_BY_STATUS_QUERY = """
+        SELECT o FROM OrderEntity o WHERE o.status = :status
+        ORDER BY o.createdAt DESC
+        """;
 
-    @Query(
-            value = """
-    SELECT * FROM orders
-    WHERE created_at BETWEEN :from AND :to
-    ORDER BY created_at DESC
-    LIMIT :limit OFFSET :offset
-    """,
-            nativeQuery = true
-    )
-    List<OrderEntity> findByDateRange(
-            @Param("from") OffsetDateTime from,
-            @Param("to") OffsetDateTime to,
-            @Param("limit") int limit,
-            @Param("offset") int offset
-    );
+    static final String FIND_BY_DATE_RANGE_QUERY = """
+        SELECT o FROM OrderEntity o
+        WHERE o.createdAt BETWEEN :from AND :to
+        ORDER BY o.createdAt DESC
+        """;
 
+    public List<OrderEntity> getAll(int page, int size) {
+        return findAll(page, size);
+    }
 
-    @Query(
-            value = """
-    SELECT * FROM orders
-    WHERE status = :status
-    ORDER BY created_at DESC
-    LIMIT :limit OFFSET :offset
-    """,
-            nativeQuery = true
-    )
-    List<OrderEntity> findByStatus(
-            @Param("status") String status,
-            @Param("limit") int limit,
-            @Param("offset") int offset
-    );
+    public List<OrderEntity> findByStatus(OrderStatus status, int page, int size) {
+        return em.createQuery(FIND_BY_STATUS_QUERY, OrderEntity.class)
+                .setParameter("status", status)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 
-
-
-
+    public List<OrderEntity> findByDateRange(OffsetDateTime from, OffsetDateTime to, int page, int size) {
+        return em.createQuery(FIND_BY_DATE_RANGE_QUERY, OrderEntity.class)
+                .setParameter("from", from)
+                .setParameter("to", to)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }

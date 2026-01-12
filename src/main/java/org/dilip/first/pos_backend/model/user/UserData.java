@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.model.data;
+package org.dilip.first.pos_backend.model.user;
 
 
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package org.dilip.first.pos_backend.util.helper;
 
-import org.dilip.first.pos_backend.model.form.InvoiceRequestForm;
-import org.dilip.first.pos_backend.model.data.InvoiceResponseData;
+import org.dilip.first.pos_backend.model.invoice.InvoiceRequestForm;
+import org.dilip.first.pos_backend.model.invoice.InvoiceResponseData;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

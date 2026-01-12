@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.model.form;
+package org.dilip.first.pos_backend.model.orders;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

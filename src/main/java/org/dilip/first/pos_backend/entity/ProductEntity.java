@@ -11,8 +11,7 @@ import lombok.Setter;
         name = "products",
         uniqueConstraints = { @UniqueConstraint(name = "uk_product_barcode", columnNames = "barcode")},
         indexes = {
-                @Index(name = "idx_product_barcode", columnList = "barcode"),
-                @Index(name = "idx_product_client", columnList = "clientId")
+                @Index(name = "idx_product_barcode", columnList = "barcode")
         }
 )
 public class ProductEntity extends AbstractEntity {

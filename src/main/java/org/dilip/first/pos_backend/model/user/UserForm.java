@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.model.form;
+package org.dilip.first.pos_backend.model.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

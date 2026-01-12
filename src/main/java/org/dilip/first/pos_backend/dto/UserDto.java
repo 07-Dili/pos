@@ -2,8 +2,8 @@ package org.dilip.first.pos_backend.dto;
 
 import org.dilip.first.pos_backend.api.UserApi;
 import org.dilip.first.pos_backend.entity.UserEntity;
-import org.dilip.first.pos_backend.model.data.UserData;
-import org.dilip.first.pos_backend.model.form.UserForm;
+import org.dilip.first.pos_backend.model.user.UserData;
+import org.dilip.first.pos_backend.model.user.UserForm;
 import org.dilip.first.pos_backend.util.conversion.UserConversionUtil;
 import org.dilip.first.pos_backend.util.helper.PasswordUtil;
 import org.dilip.first.pos_backend.util.helper.StringUtil;

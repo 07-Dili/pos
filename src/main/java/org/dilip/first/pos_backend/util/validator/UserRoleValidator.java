@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public class UserRoleValidator {
 
-    private UserRoleValidator() {
-    }
+    private UserRoleValidator() {}
 
     public static UserRole deriveRoleFromEmail(String email) {
 

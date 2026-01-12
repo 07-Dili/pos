@@ -20,7 +20,7 @@ public class UserApi {
     public UserEntity createUser(String email, String hashedPassword) {
 
         if (userDao.findByEmail(email) != null) {
-            throw new ApiException(HttpStatus.CONFLICT, "User already exists "+email);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User already exists "+email);
         }
         UserRole role = extractRoleFromEmail(email);
         UserEntity entity = new UserEntity();
@@ -51,11 +51,11 @@ public class UserApi {
         UserEntity user = userDao.findByEmail(email);
 
         if (user == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid email "+email);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Email not exists : "+email);
         }
 
         if (!PasswordUtil.verifyPassword(rawPassword, user.getPassword())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Incorrect password "+rawPassword);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Incorrect password ");
         }
 
         return user;

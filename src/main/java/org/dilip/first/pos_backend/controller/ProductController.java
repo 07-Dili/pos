@@ -2,10 +2,10 @@ package org.dilip.first.pos_backend.controller;
 
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.ProductDto;
-import org.dilip.first.pos_backend.model.data.ProductData;
-import org.dilip.first.pos_backend.model.form.ProductForm;
-import org.dilip.first.pos_backend.model.form.ProductSearchForm;
-import org.dilip.first.pos_backend.model.form.ProductUpdateForm;
+import org.dilip.first.pos_backend.model.products.ProductData;
+import org.dilip.first.pos_backend.model.products.ProductForm;
+import org.dilip.first.pos_backend.model.products.ProductSearchForm;
+import org.dilip.first.pos_backend.model.products.ProductUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

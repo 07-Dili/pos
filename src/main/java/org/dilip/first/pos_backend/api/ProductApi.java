@@ -1,9 +1,9 @@
 package org.dilip.first.pos_backend.api;
 
-import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.dilip.first.pos_backend.flow.ProductFlow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,76 +19,54 @@ public class ProductApi {
     private ProductDao productDao;
 
     @Autowired
-    private ClientDao clientDao;
+    private ProductFlow productFlow;
 
     public ProductEntity getByBarcode(String barcode) {
-
         ProductEntity product = productDao.findByBarcode(barcode);
-
         if (product == null) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "Product not found for barcode: " + barcode);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
         }
+        return product;
+    }
 
+    public ProductEntity getById(Long id) {
+        ProductEntity product = productDao.findById(id);
+        if (product == null) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Product not found with id: " + id);
+        }
         return product;
     }
 
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
-        if (!clientDao.existsById(clientId)) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "Client does not exist " + clientId);
-        }
 
         if (productDao.findByBarcode(barcode) != null) {
-            throw new ApiException(HttpStatus.CONFLICT, "Barcode already exists " + barcode);
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Barcode already exists: " + barcode);
         }
 
-        ProductEntity entity = new ProductEntity();
-        entity.setClientId(clientId);
-        entity.setName(name);
-        entity.setBarcode(barcode);
-        entity.setMrp(mrp);
-
-        return productDao.save(entity);
+        return productFlow.create(clientId, name, barcode, mrp);
     }
-
-    public List<ProductEntity> search(
-            Long id,
-            Long clientId,
-            String name,
-            String barcode,
-            int page,
-            int size) {
-
-        int offset = page * size;
-        return productDao.search(id, clientId, name, barcode, size, offset);
-    }
-
 
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
-        ProductEntity product = productDao.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Product not found " + id));
-
-        clientDao.findById(clientId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Client does not exist " + clientId));
-
-        ProductEntity existingByBarcode = productDao.findByBarcode(barcode);
-
-        if (existingByBarcode != null && !existingByBarcode.getId().equals(id)) {
-            throw new ApiException(HttpStatus.CONFLICT, "Barcode already exists " + barcode);
+        ProductEntity product = productDao.findById(id);
+        if (product == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
         }
 
-        product.setClientId(clientId);
-        product.setName(name);
-        product.setMrp(mrp);
-        product.setBarcode(barcode);
+        ProductEntity existing = productDao.findByBarcode(barcode);
+        if (existing != null && !existing.getId().equals(id)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Barcode already exists: " + barcode);
+        }
 
-        return productDao.save(product);
+        return productFlow.update(product, clientId, name, mrp, barcode);
     }
 
     public List<ProductEntity> getAll(int page, int size) {
+        return productDao.findAll(page, size);
+    }
 
-        int offset = page * size;
-        return productDao.findAllWithPagination(size, offset);
+    public List<ProductEntity> search(Long id, Long clientId, String name, String barcode, int page, int size) {
+        return productDao.search(id, clientId, name, barcode, page, size);
     }
 }

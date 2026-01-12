@@ -46,7 +46,10 @@ public class SecurityFilter implements Filter {
 
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            res.sendError(HttpStatus.UNAUTHORIZED.value(), "User not logged in");
+
+            res.setStatus(HttpStatus.UNAUTHORIZED.value());
+            res.setContentType("application/json");
+            res.getWriter().write("{\"message\":\"User not logged in\"}");
             return;
         }
 
@@ -55,7 +58,9 @@ public class SecurityFilter implements Filter {
 
         if (lastAccess == null || now.minusSeconds(INACTIVE_LIMIT_SECONDS).isAfter(lastAccess)) {
             session.invalidate();
-            res.sendError(HttpStatus.UNAUTHORIZED.value(), "Session expired");
+            res.setStatus(HttpStatus.UNAUTHORIZED.value());
+            res.setContentType("application/json");
+            res.getWriter().write("{\"message\":\"Session expired\"}");
             return;
         }
 
@@ -64,7 +69,9 @@ public class SecurityFilter implements Filter {
         UserRole role = (UserRole) session.getAttribute("role");
 
         if (isUploadApi(path) && role == UserRole.OPERATOR) {
-            res.sendError(HttpStatus.FORBIDDEN.value(), "Operator not allowed to upload");
+            res.setStatus(HttpStatus.FORBIDDEN.value());
+            res.setContentType("application/json");
+            res.getWriter().write("{\"message\":\"Operator not allowed to upload\"}");
             return;
         }
 

@@ -1,4 +1,4 @@
-package org.dilip.first.pos_backend.model.form;
+package org.dilip.first.pos_backend.model.inventory;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

@@ -2,10 +2,10 @@ package org.dilip.first.pos_backend.controller;
 
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.ClientDto;
-import org.dilip.first.pos_backend.model.data.ClientData;
-import org.dilip.first.pos_backend.model.form.ClientForm;
-import org.dilip.first.pos_backend.model.form.ClientSearchForm;
-import org.dilip.first.pos_backend.model.form.ClientUpdateForm;
+import org.dilip.first.pos_backend.model.clients.ClientData;
+import org.dilip.first.pos_backend.model.clients.ClientForm;
+import org.dilip.first.pos_backend.model.clients.ClientSearchForm;
+import org.dilip.first.pos_backend.model.clients.ClientUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

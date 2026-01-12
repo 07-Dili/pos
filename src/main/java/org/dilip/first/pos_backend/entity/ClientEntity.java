@@ -11,8 +11,7 @@ import lombok.Setter;
 @Table(
         name = "clients",
         indexes = {
-                @Index(name = "idx_client_name", columnList = "name"),
-                @Index(name = "idx_client_created_at", columnList = "createdAt")
+                @Index(name = "idx_client_name", columnList = "name")
         },
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_client_name", columnNames = "name"),

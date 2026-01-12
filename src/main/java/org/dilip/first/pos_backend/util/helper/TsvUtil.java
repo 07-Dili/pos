@@ -33,14 +33,14 @@ public class TsvUtil {
                 rows.add(line.split("\t"));
 
                 if (rows.size() > maxRows) {
-                    throw new ApiException(HttpStatus.BAD_REQUEST, "File exceeds maximum allowed rows: " + maxRows);
+                    throw new ApiException(HttpStatus.BAD_REQUEST, "Maximum 5000 rows are allowed");
                 }
             }
 
             return rows;
 
         } catch (Exception e) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid TSV file ");
+            throw new ApiException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 }

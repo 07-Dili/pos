@@ -4,8 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.UserDto;
-import org.dilip.first.pos_backend.model.data.UserData;
-import org.dilip.first.pos_backend.model.form.UserForm;
+import org.dilip.first.pos_backend.model.user.UserData;
+import org.dilip.first.pos_backend.model.user.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,6 @@ public class UserController {
         session.setAttribute("lastAccess", Instant.now());
         return user;
     }
-
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {

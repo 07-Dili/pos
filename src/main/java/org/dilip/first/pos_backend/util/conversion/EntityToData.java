@@ -4,7 +4,11 @@ import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
-import org.dilip.first.pos_backend.model.data.*;
+import org.dilip.first.pos_backend.model.clients.ClientData;
+import org.dilip.first.pos_backend.model.inventory.InventoryData;
+import org.dilip.first.pos_backend.model.orders.OrderData;
+import org.dilip.first.pos_backend.model.products.ProductData;
+import org.dilip.first.pos_backend.model.products.ProductInventoryData;
 
 public class EntityToData {
     public static ClientData convertClientEntityToData(ClientEntity entity) {

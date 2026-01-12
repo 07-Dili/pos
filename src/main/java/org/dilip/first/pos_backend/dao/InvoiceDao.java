@@ -1,11 +1,22 @@
 package org.dilip.first.pos_backend.dao;
 
 import org.dilip.first.pos_backend.entity.InvoiceEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+@Repository
+public class InvoiceDao extends AbstractDao<InvoiceEntity> {
 
-public interface InvoiceDao extends JpaRepository<InvoiceEntity, Long> {
+    static final String FIND_BY_ORDER_ID_QUERY = "SELECT i FROM InvoiceEntity i WHERE i.orderId = :orderId";
 
-    Optional<InvoiceEntity> findByOrderId(Long orderId);
+    public InvoiceDao() {
+        super(InvoiceEntity.class);
+    }
+
+    public InvoiceEntity findByOrderId(Long orderId) {
+        return em.createQuery(FIND_BY_ORDER_ID_QUERY, InvoiceEntity.class)
+                .setParameter("orderId", orderId)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
 }

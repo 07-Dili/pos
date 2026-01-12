@@ -1,58 +1,45 @@
 package org.dilip.first.pos_backend.dao;
 
 import org.dilip.first.pos_backend.entity.InventoryEntity;
-import org.dilip.first.pos_backend.model.data.FilterResponseData;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.dilip.first.pos_backend.model.inventory.InventoryFilterResponseData;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface InventoryDao extends JpaRepository<InventoryEntity, Long> {
+@Repository
+public class InventoryDao extends AbstractDao<InventoryEntity> {
 
-    Optional<InventoryEntity> findByProductId(Long productId);
+    public InventoryDao() {
+        super(InventoryEntity.class);
+    }
 
-    @Query(
-            value = """
-    SELECT
-        p.id AS productId,
-        p.client_id AS clientId,
-        p.name AS productName,
-        p.barcode AS barcode,
-        p.mrp AS mrp,
-        i.quantity AS quantity
-    FROM inventory i
-    JOIN products p ON i.product_id = p.id
-    WHERE (:productId IS NULL OR p.id = :productId)
-      AND (:barcode IS NULL OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :barcode, '%')))
-      AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
-    ORDER BY p.name
-    LIMIT :limit OFFSET :offset
-    """,
-            nativeQuery = true
-    )
-    List<FilterResponseData> filter(
-            @Param("productId") Long productId,
-            @Param("barcode") String barcode,
-            @Param("name") String name,
-            @Param("limit") int limit,
-            @Param("offset") int offset
-    );
+    static final String FIND_BY_PRODUCT_ID_QUERY = "SELECT i FROM InventoryEntity i WHERE i.product.id = :productId";
 
+    static final String FILTER_QUERY = """
+        SELECT new InventoryFilterResponseData(p.id,p.clientId,p.name,p.barcode,p.mrp,i.quantity)
+        FROM InventoryEntity i
+        JOIN i.product p
+        WHERE (:productId IS NULL OR p.id = :productId)
+          AND (:barcode IS NULL OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :barcode, '%')))
+          AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
+        ORDER BY p.name
+        """;
 
+    public InventoryEntity findByProductId(Long productId) {
+        return em.createQuery(FIND_BY_PRODUCT_ID_QUERY, InventoryEntity.class)
+                .setParameter("productId", productId)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
 
-
-    @Query(
-            value = """
-        SELECT * FROM inventory
-        ORDER BY product_id
-        LIMIT :limit OFFSET :offset
-        """,
-            nativeQuery = true
-    )
-    List<InventoryEntity> findAll(
-            @Param("limit") int limit,
-            @Param("offset") int offset
-    );
+    public List<InventoryFilterResponseData> filter(Long productId, String barcode, String name, int page, int size) {
+        return em.createQuery(FILTER_QUERY, InventoryFilterResponseData.class)
+                .setParameter("productId", productId)
+                .setParameter("barcode", barcode)
+                .setParameter("name", name)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }

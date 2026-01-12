@@ -1,7 +1,7 @@
 package org.dilip.first.pos_backend.util.conversion;
 
 import org.dilip.first.pos_backend.entity.UserEntity;
-import org.dilip.first.pos_backend.model.data.UserData;
+import org.dilip.first.pos_backend.model.user.UserData;
 
 public class UserConversionUtil {
 

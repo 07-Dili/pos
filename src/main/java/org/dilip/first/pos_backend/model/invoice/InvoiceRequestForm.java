@@ -1,10 +1,9 @@
-package org.dilip.first.pos_backend.model.form;
+package org.dilip.first.pos_backend.model.invoice;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data

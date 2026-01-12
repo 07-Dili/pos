@@ -2,11 +2,12 @@ package org.dilip.first.pos_backend.controller;
 
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.dto.InventoryDto;
-import org.dilip.first.pos_backend.model.data.FilterResponseData;
-import org.dilip.first.pos_backend.model.data.InventoryData;
-import org.dilip.first.pos_backend.model.data.ProductInventoryData;
-import org.dilip.first.pos_backend.model.form.InventoryUpdateForm;
-import org.dilip.first.pos_backend.model.form.InventoryCreateForm;
+import org.dilip.first.pos_backend.model.inventory.InventoryFilterResponseData;
+import org.dilip.first.pos_backend.model.inventory.InventoryData;
+import org.dilip.first.pos_backend.model.products.ProductInventoryData;
+import org.dilip.first.pos_backend.model.inventory.InventorySearchForm;
+import org.dilip.first.pos_backend.model.inventory.InventoryUpdateForm;
+import org.dilip.first.pos_backend.model.inventory.InventoryCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,14 +27,8 @@ public class InventoryController {
     }
 
     @GetMapping("/filter")
-    public List<FilterResponseData> filter(
-            @RequestParam(required = false) Long productId,
-            @RequestParam(required = false) String barcode,
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        return inventoryDto.filter(productId, barcode, name, page, size);
+    public List<InventoryFilterResponseData> filter(InventorySearchForm form){
+        return inventoryDto.filter(form);
     }
 
     @GetMapping

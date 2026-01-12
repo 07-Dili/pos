@@ -3,10 +3,10 @@ package org.dilip.first.pos_backend.dto;
 import jakarta.validation.Valid;
 import org.dilip.first.pos_backend.api.ClientApi;
 import org.dilip.first.pos_backend.entity.ClientEntity;
-import org.dilip.first.pos_backend.model.data.ClientData;
-import org.dilip.first.pos_backend.model.form.ClientForm;
-import org.dilip.first.pos_backend.model.form.ClientSearchForm;
-import org.dilip.first.pos_backend.model.form.ClientUpdateForm;
+import org.dilip.first.pos_backend.model.clients.ClientData;
+import org.dilip.first.pos_backend.model.clients.ClientForm;
+import org.dilip.first.pos_backend.model.clients.ClientSearchForm;
+import org.dilip.first.pos_backend.model.clients.ClientUpdateForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +66,7 @@ public class ClientDto {
         int page = form.getPage();
         int size = form.getSize();
 
-        List<ClientEntity> entities =
-                clientApi.search(id, name, email, page, size);
+        List<ClientEntity> entities = clientApi.search(id, name, email, page, size);
 
         return entities.stream()
                 .map(EntityToData::convertClientEntityToData)

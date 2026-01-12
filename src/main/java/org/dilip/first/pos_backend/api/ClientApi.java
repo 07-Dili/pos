@@ -3,6 +3,7 @@ package org.dilip.first.pos_backend.api;
 import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,42 @@ public class ClientApi {
     @Autowired
     private ClientDao clientDao;
 
+    public ClientEntity create(String name, String email, String phone) {
+
+        if (clientDao.findByName(name) != null) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Client already exists " + name);
+        }
+        ClientEntity client = clientDao.findByEmail(email);
+        if(client != null){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists : " + email);
+        }
+        ClientEntity entity = new ClientEntity();
+        entity.setName(name);
+        entity.setEmail(email);
+        entity.setPhone(phone);
+        return clientDao.save(entity);
+    }
+
     public ClientEntity update(Long id, String name, String email, String phone) {
 
-        ClientEntity existing = getById(id);
+        email= StringUtil.normalizeToLowerCase(email);
+        name= StringUtil.normalizeToLowerCase(name);
 
-        ClientEntity duplicate = clientDao.findByName(name);
-        if (duplicate != null && !duplicate.getId().equals(id)) {
-            throw new ApiException(HttpStatus.CONFLICT, "Client already exists " + name);
+        if(phone.length()!=10) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Phone length should be 10 characters");
         }
 
+        ClientEntity existing = getById(id);
+        ClientEntity duplicate = clientDao.findByName(name);
+
+        if (duplicate != null && !duplicate.getId().equals(id)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists " + name);
+        }
+
+        ClientEntity client = clientDao.findByEmail(email);
+        if(client != null){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists : " + email);
+        }
         existing.setName(name);
         existing.setEmail(email);
         existing.setPhone(phone);
@@ -33,34 +61,20 @@ public class ClientApi {
         return clientDao.save(existing);
     }
 
-    public ClientEntity create(String name, String email, String phone) {
-
-        if (clientDao.findByName(name) != null) {
-            throw new ApiException(HttpStatus.CONFLICT, "Client already exists " + name);
-        }
-
-        ClientEntity entity = new ClientEntity();
-        entity.setName(name);
-        entity.setEmail(email);
-        entity.setPhone(phone);
-
-        return clientDao.save(entity);
-    }
-
     public ClientEntity getById(Long id) {
-        return clientDao.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Client not found " + id));
+
+        ClientEntity client = clientDao.findById(id);
+        if (client == null) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Client not found " + id);
+        }
+        return client;
     }
 
     public List<ClientEntity> getAll(int page, int size) {
-
-        int offset = page * size;
-        return clientDao.findAllWithPagination(size, offset);
+        return clientDao.findAll(page, size);
     }
 
     public List<ClientEntity> search(Long id, String name, String email, int page, int size) {
-
-        int offset = page * size;
-        return clientDao.search(id, name, email, size, offset);
+        return clientDao.search(id, name, email, page, size);
     }
 }
