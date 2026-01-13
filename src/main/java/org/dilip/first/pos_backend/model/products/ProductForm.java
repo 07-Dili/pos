@@ -22,7 +22,7 @@ public class ProductForm {
     private String barcode;
 
     @NotNull
-    @DecimalMin(value = "0.01", message = "MRP must be greater than 0")
+    @DecimalMin(value = "1", message = "MRP must be greater than 0")
     private Double mrp;
 }
 

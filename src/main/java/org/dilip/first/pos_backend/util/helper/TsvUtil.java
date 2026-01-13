@@ -11,9 +11,6 @@ import java.util.List;
 
 public class TsvUtil {
 
-    private TsvUtil() {
-    }
-
     public static List<String[]> parse(MultipartFile file, int maxRows) {
 
         try {

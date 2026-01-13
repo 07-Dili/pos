@@ -19,7 +19,8 @@ public class OrderController {
     private OrderDto orderDto;
 
     @GetMapping
-    public List<OrderData> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    public List<OrderData> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20")
+    int size) {
         return orderDto.getAll(page, size);
     }
 
@@ -29,7 +30,8 @@ public class OrderController {
     }
 
     @GetMapping("/status")
-    public List<OrderData> getByStatus( @RequestParam OrderStatus status, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    public List<OrderData> getByStatus( @RequestParam OrderStatus status, @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "20") int size) {
         return orderDto.getByStatus(status, page, size);
     }
 
@@ -39,7 +41,10 @@ public class OrderController {
     }
 
     @GetMapping("/by-date")
-    public List<OrderData> getByDateRange( @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    public List<OrderData> getByDateRange( @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
+                                           @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
+                                           @RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "20") int size) {
         return orderDto.getByDateRange(from, to, page, size);
     }
 

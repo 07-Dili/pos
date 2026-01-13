@@ -62,7 +62,7 @@ public class InventoryApi {
         }
 
         if (inventory.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory " + inventory.getQuantity());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: "+inventory.getProduct().getName());
         }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);

@@ -13,6 +13,6 @@ public class InventoryUpdateForm {
     private Long productId;
 
     @NotNull
-    @Min(value = 0, message = "Quantity cannot be negative")
+    @Min(value = 1, message = "Quantity cannot be negative")
     private Long quantity;
 }

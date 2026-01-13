@@ -1,7 +1,6 @@
 package org.dilip.first.pos_backend.config;
 
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.exception.ErrorData;
 import org.dilip.first.pos_backend.exception.FieldErrorData;
@@ -13,10 +12,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
 

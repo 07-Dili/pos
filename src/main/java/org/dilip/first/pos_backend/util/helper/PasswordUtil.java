@@ -6,8 +6,6 @@ public class PasswordUtil {
 
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
-    private PasswordUtil() {}
-
     public static String hashPassword(String rawPassword) {
         return ENCODER.encode(rawPassword);
     }

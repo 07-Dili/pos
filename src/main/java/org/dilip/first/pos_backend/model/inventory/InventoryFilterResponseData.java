@@ -13,5 +13,4 @@ public class InventoryFilterResponseData {
     private String barcode;
     private Double mrp;
     private Long quantity;
-
 }
