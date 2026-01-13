@@ -36,11 +36,8 @@ public class ClientApi {
 
     public ClientEntity update(Long id, String name, String email, String phone) {
 
-        email= StringUtil.normalizeToLowerCase(email);
-        name= StringUtil.normalizeToLowerCase(name);
-
         if(phone.length()!=10) {
-            throw new ApiException( HttpStatus.BAD_REQUEST, "Phone length should be 10 characters");
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Phone number must be exactly 10 digits");
         }
 
         ClientEntity existing = getById(id);
@@ -51,7 +48,7 @@ public class ClientApi {
         }
 
         ClientEntity client = clientDao.findByEmail(email);
-        if(client != null){
+        if(client != null && !client.getId().equals(id)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists : " + email);
         }
         existing.setName(name);

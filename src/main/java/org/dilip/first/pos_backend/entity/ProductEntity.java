@@ -9,7 +9,7 @@ import lombok.Setter;
 @Entity
 @Table(
         name = "products",
-        uniqueConstraints = { @UniqueConstraint(name = "uk_product_barcode", columnNames = "barcode")},
+        uniqueConstraints = { @UniqueConstraint(columnNames = "barcode")},
         indexes = {
                 @Index(name = "idx_product_barcode", columnList = "barcode")
         }

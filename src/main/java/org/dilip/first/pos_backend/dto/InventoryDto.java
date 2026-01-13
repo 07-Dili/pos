@@ -96,7 +96,7 @@ public class InventoryDto {
 
     public List<InventoryFilterResponseData> filter( InventorySearchForm form) {
 
-        String barcode=form.getBarcode();
+        String barcode=StringUtil.normalizeToLowerCase(form.getBarcode());
         String name= StringUtil.normalizeToLowerCase(form.getName());
         Long productId=form.getProductId();
         int page = 0;

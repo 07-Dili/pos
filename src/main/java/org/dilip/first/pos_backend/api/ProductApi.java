@@ -55,6 +55,7 @@ public class ProductApi {
         }
 
         ProductEntity existing = productDao.findByBarcode(barcode);
+
         if (existing != null && !existing.getId().equals(id)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Barcode already exists: " + barcode);
         }
