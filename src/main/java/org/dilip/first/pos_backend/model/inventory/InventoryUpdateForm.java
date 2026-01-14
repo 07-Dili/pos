@@ -16,6 +16,5 @@ public class InventoryUpdateForm {
 
     @NotNull
     @Min(value = 1, message = "Quantity cannot be negative")
-    @Max(value = 9223372036854775807L, message = "Quantity exceeds maximum supported value")
     private Long quantity;
 }

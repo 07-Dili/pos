@@ -15,6 +15,5 @@ public class InventoryCreateForm {
 
     @NotNull
     @Min(1)
-    @Size(max = 256,message = "Maximum 19 digits is supported for quantity")
     private Long quantity;
 }

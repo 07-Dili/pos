@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 @Component
@@ -70,7 +71,7 @@ public class InvoiceFlow {
 
         InvoiceRequestForm request = new InvoiceRequestForm();
         request.setOrderId(order.getId());
-        request.setOrderDate(LocalDate.now().toString());
+        request.setOrderDate(LocalDateTime.now().toString());
         request.setTotalAmount(order.getTotalAmount());
         request.setItems(items);
 
