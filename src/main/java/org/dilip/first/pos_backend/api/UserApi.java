@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.dilip.first.pos_backend.util.helper.StringUtil.extractRoleFromEmail;
+
 @Service
 @Transactional
 public class UserApi {
@@ -29,21 +31,6 @@ public class UserApi {
         entity.setRole(role);
 
         return userDao.save(entity);
-    }
-
-    private UserRole extractRoleFromEmail(String email) {
-
-        String rolePart = email.substring(email.indexOf('@') + 1).toLowerCase().trim();
-
-        if (rolePart.startsWith("operator")) {
-            return UserRole.OPERATOR;
-        }
-
-        if (rolePart.startsWith("supervisor")) {
-            return UserRole.SUPERVISOR;
-        }
-
-        throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid role in email. Allowed roles: OPERATOR, SUPERVISOR "+email);
     }
 
     public UserEntity authenticateUser(String email, String rawPassword) {

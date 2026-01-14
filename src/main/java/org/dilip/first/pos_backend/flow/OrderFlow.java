@@ -34,7 +34,6 @@ public class OrderFlow {
 
     public OrderEntity placeOrder(List<OrderItemForm> items) {
 
-        OrderEntity order = orderApi.createOrder();
         double total = 0;
 
         for (OrderItemForm form : items) {
@@ -42,10 +41,21 @@ public class OrderFlow {
             ProductEntity product = productApi.getByBarcode(form.getBarcode());
 
             if (form.getSellingPrice() < product.getMrp()) {
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Selling price below MRP " + form.getSellingPrice() + " < " + product.getMrp());
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Selling price below MRP for barcode " + product.getBarcode());
             }
 
-            inventoryApi.reduce(product.getId(), form.getQuantity());
+            inventoryApi.validateAvailability(product.getBarcode(), form.getQuantity());
+
+            total += form.getQuantity() * form.getSellingPrice();
+        }
+
+        OrderEntity order = orderApi.createOrder(total);
+
+        for (OrderItemForm form : items) {
+
+            ProductEntity product = productApi.getByBarcode(form.getBarcode());
+
+            inventoryApi.reduce(product.getBarcode(), form.getQuantity());
 
             OrderItemEntity item = new OrderItemEntity();
             item.setOrderId(order.getId());
@@ -55,13 +65,11 @@ public class OrderFlow {
             item.setSellingPrice(form.getSellingPrice());
 
             orderItemDao.save(item);
-
-            total += form.getQuantity() * form.getSellingPrice();
         }
 
-        orderApi.updateTotal(order, total);
         return order;
     }
+
     public List<OrderItemEntity> getItemsByOrderId(Long orderId) {
         return orderItemDao.findByOrderId(orderId);
     }

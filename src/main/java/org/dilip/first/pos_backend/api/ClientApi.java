@@ -3,7 +3,6 @@ package org.dilip.first.pos_backend.api;
 import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,10 +22,12 @@ public class ClientApi {
         if (clientDao.findByName(name) != null) {
             throw new ApiException( HttpStatus.BAD_REQUEST, "Client already exists " + name);
         }
+
         ClientEntity client = clientDao.findByEmail(email);
         if(client != null){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists : " + email);
         }
+
         ClientEntity entity = new ClientEntity();
         entity.setName(name);
         entity.setEmail(email);
@@ -51,10 +52,10 @@ public class ClientApi {
         if(client != null && !client.getId().equals(id)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client already exists : " + email);
         }
+
         existing.setName(name);
         existing.setEmail(email);
         existing.setPhone(phone);
-
         return clientDao.save(existing);
     }
 

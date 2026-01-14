@@ -19,7 +19,6 @@ public class InvoiceApi {
     @Autowired
     private InvoiceFlow invoiceFlow;
 
-
     public InvoiceEntity getByOrderId(Long orderId) {
         InvoiceEntity invoice = invoiceDao.findByOrderId(orderId);
         if (invoice == null) {

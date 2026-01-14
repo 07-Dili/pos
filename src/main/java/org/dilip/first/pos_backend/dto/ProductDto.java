@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertProductEntityToData;
+import static org.dilip.first.pos_backend.util.helper.ExceptionBuilder.buildProductUploadException;
 
 @Component
 public class ProductDto {
@@ -78,18 +79,5 @@ public class ProductDto {
         if (!errors.isEmpty()) {
             throw buildProductUploadException(errors);
         }
-    }
-
-    private ApiException buildProductUploadException(List<ProductUploadError> errors) {
-
-        String message = errors.stream()
-                .map(e ->
-                        "line " + e.getLineNumber()
-                                + " (barcode: " + e.getBarcode() + ") - "
-                                + e.getMessage()
-                )
-                .collect(Collectors.joining(", "));
-
-        return new ApiException(HttpStatus.BAD_REQUEST, "Product upload failed for: " + message);
     }
 }

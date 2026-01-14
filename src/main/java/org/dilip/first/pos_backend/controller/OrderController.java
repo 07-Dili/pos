@@ -19,8 +19,7 @@ public class OrderController {
     private OrderDto orderDto;
 
     @GetMapping
-    public List<OrderData> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20")
-    int size) {
+    public List<OrderData> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return orderDto.getAll(page, size);
     }
 

@@ -31,17 +31,14 @@ public class InventoryApi {
     }
 
     public InventoryEntity create(Long productId, Long quantity) {
-
         if (quantity == null || quantity <= 0) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid quantity " + quantity);
         }
-
         return inventoryFlow.create(productId, quantity);
     }
 
     public InventoryEntity updateQuantity(Long productId, Long newQuantity) {
-
-        if (newQuantity == null || newQuantity <=0) {
+        if (newQuantity == null || newQuantity <= 0) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Quantity should be greater than 0 " + newQuantity);
         }
 
@@ -54,36 +51,25 @@ public class InventoryApi {
         return inventoryDao.save(inventory);
     }
 
-    public void reduce(Long productId, Long quantity) {
-
-        InventoryEntity inventory = inventoryDao.findByProductId(productId);
-        if (inventory == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found for product " + productId);
-        }
-
-        if (inventory.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: "+inventory.getProduct().getName());
-        }
-
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventoryDao.save(inventory);
+    public void reduce(String barcode, Long quantity) {
+        inventoryFlow.reduceByBarcode(barcode, quantity);
     }
 
     public List<InventoryEntity> getAll(int page, int size) {
-        return inventoryDao.findAll(InventoryEntity.class,page, size);
+        return inventoryDao.findAll(InventoryEntity.class, page, size);
     }
 
-    public List<InventoryFilterResponseData> filter(Long productId, String barcode, String name, int page, int size) {
+    public List<InventoryFilterResponseData> filter(Long productId, String barcode,
+                                                    String name, int page, int size) {
         return inventoryDao.filter(productId, barcode, name, page, size);
     }
 
-    public boolean uploadInventoryRow(String barcode, Long quantity) {
-
-        if (quantity == null || quantity <= 0) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid quantity " + quantity);
-        }
-
+    public String uploadInventoryRow(String barcode, Long quantity) {
         return inventoryFlow.uploadInventoryRow(barcode, quantity);
+    }
+
+    public void validateAvailability(String barcode, Long quantity) {
+        inventoryFlow.validateAvailability(barcode, quantity);
     }
 
 }

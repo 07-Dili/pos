@@ -20,9 +20,9 @@ public class OrderApi {
     private OrderDao orderDao;
 
     public OrderEntity getById(Long orderId) {
-        OrderEntity order = orderDao.findById(OrderEntity.class,orderId);
+        OrderEntity order = orderDao.findById(OrderEntity.class, orderId);
         if (order == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Order not found with id: " + orderId);
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Order not found with id: " + orderId);
         }
         return order;
     }
@@ -42,15 +42,11 @@ public class OrderApi {
         return orderDao.findByDateRange(from, to, page, size);
     }
 
-    public OrderEntity createOrder() {
+    public OrderEntity createOrder(Double totalAmount) {
         OrderEntity order = new OrderEntity();
         order.setStatus(OrderStatus.CREATED);
-        order.setTotalAmount(0.0);
+        order.setTotalAmount(totalAmount);
         return orderDao.save(order);
     }
-
-    public void updateTotal(OrderEntity order, Double total) {
-        order.setTotalAmount(total);
-        orderDao.save(order);
-    }
 }
+

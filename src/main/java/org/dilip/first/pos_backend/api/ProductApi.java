@@ -31,10 +31,7 @@ public class ProductApi {
         ProductEntity existing = productDao.findByBarcode(barcode);
 
         if (existing != null) {
-            throw new ApiException(
-                    HttpStatus.BAD_REQUEST,
-                    buildDuplicateBarcodeMessage(existing)
-            );
+            throw new ApiException(HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
         }
 
         return productFlow.create(clientId, name, barcode, mrp);
@@ -42,19 +39,15 @@ public class ProductApi {
 
     private String buildDuplicateBarcodeMessage(ProductEntity existing) {
 
-        ClientEntity client = clientDao.findById(
-                ClientEntity.class,
-                existing.getClientId()
-        );
+        ClientEntity client = clientDao.findById(ClientEntity.class, existing.getClientId());
 
-        String clientName = (client != null)
-                ? client.getName()
-                : String.valueOf(existing.getClientId());
+        String clientName = (client != null) ? client.getName() : String.valueOf(existing.getClientId());
 
         return "Product barcode already exists for client: " + clientName;
     }
 
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
+
         ProductEntity product = productDao.findById(ProductEntity.class, id);
         if (product == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
@@ -62,10 +55,7 @@ public class ProductApi {
 
         ProductEntity existing = productDao.findByBarcode(barcode);
         if (existing != null && !existing.getId().equals(id)) {
-            throw new ApiException(
-                    HttpStatus.BAD_REQUEST,
-                    buildDuplicateBarcodeMessage(existing)
-            );
+            throw new ApiException( HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
         }
 
         return productFlow.update(product, clientId, name, mrp, barcode);

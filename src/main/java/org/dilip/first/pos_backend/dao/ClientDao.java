@@ -22,16 +22,14 @@ public class ClientDao extends AbstractDao<ClientEntity> {
 
     public ClientEntity findByName(String name) {
         List<ClientEntity> result = em.createQuery( FIND_BY_NAME_QUERY, ClientEntity.class)
-                .setParameter("name", name)
-                .getResultList();
+                .setParameter("name", name).getResultList();
 
         return result.isEmpty() ? null : result.get(0);
     }
 
     public ClientEntity findByEmail(String email) {
         List<ClientEntity> result = em.createQuery( FIND_BY_EMAIL_QUERY, ClientEntity.class)
-                .setParameter("email", email)
-                .getResultList();
+                .setParameter("email", email).getResultList();
 
         return result.isEmpty() ? null : result.get(0);
     }

@@ -1,6 +1,6 @@
 package org.dilip.first.pos_backend.controller;
 
-import org.dilip.first.pos_backend.api.InvoiceApi;
+import org.dilip.first.pos_backend.dto.InvoiceDto;
 import org.dilip.first.pos_backend.entity.InvoiceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -12,20 +12,24 @@ import org.springframework.web.bind.annotation.*;
 public class InvoiceController {
 
         @Autowired
-        private InvoiceApi invoiceApi;
+        private InvoiceDto invoiceDto;
 
         @PostMapping("/generate/{orderId}")
         public ResponseEntity<InvoiceEntity> generateInvoice(@PathVariable Long orderId) {
-                InvoiceEntity invoice = invoiceApi.generateInvoice(orderId);
+                InvoiceEntity invoice = invoiceDto.generateInvoice(orderId);
                 return ResponseEntity.ok(invoice);
         }
 
         @GetMapping("/{orderId}/download")
         public ResponseEntity<FileSystemResource> download(@PathVariable Long orderId) {
-                InvoiceEntity invoice = invoiceApi.getByOrderId(orderId);
-                FileSystemResource file = new FileSystemResource(invoice.getPdfPath());
+
+                FileSystemResource file = invoiceDto.getInvoicePdf(orderId);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getFilename())
-                                .contentType(MediaType.APPLICATION_PDF).body(file);
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=" + file.getFilename())
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(file);
         }
 }
+

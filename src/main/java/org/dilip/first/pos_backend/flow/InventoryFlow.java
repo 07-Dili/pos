@@ -20,11 +20,34 @@ public class InventoryFlow {
     @Autowired
     private ProductDao productDao;
 
+    public void reduceByBarcode(String barcode, Long quantity) {
+
+        ProductEntity product = productDao.findByBarcode(barcode);
+
+        if (product == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
+        }
+
+        InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
+
+        if (inventory == null) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
+        }
+
+        if (inventory.getQuantity() < quantity) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        inventoryDao.save(inventory);
+    }
+
+
     public InventoryEntity create(Long productId, Long quantity) {
 
-        ProductEntity product = productDao.findById(ProductEntity.class,productId);
+        ProductEntity product = productDao.findById(ProductEntity.class, productId);
         if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found " + productId);
+            throw new RuntimeException("Product not found " + productId);
         }
 
         InventoryEntity inventory = inventoryDao.findByProductId(productId);
@@ -40,11 +63,19 @@ public class InventoryFlow {
         return inventoryDao.save(inventory);
     }
 
-    public boolean uploadInventoryRow(String barcode, Long quantity) {
+    public String uploadInventoryRow(String barcode, Long quantity) {
+
+        if (barcode == null || barcode.isBlank()) {
+            return "Barcode is empty";
+        }
+
+        if (quantity == null || quantity <= 0) {
+            return "Invalid quantity: " + quantity;
+        }
 
         ProductEntity product = productDao.findByBarcode(barcode);
         if (product == null) {
-            return false;
+            return "Product not found for barcode: " + barcode;
         }
 
         InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
@@ -58,8 +89,24 @@ public class InventoryFlow {
         }
 
         inventoryDao.save(inventory);
-        return true;
+        return null;
+    }
+    public void validateAvailability(String barcode, Long quantity) {
+
+        ProductEntity product = productDao.findByBarcode(barcode);
+        if (product == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
+        }
+
+        InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
+        if (inventory == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
+        }
+
+        if (inventory.getQuantity() < quantity) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
+        }
     }
 
-}
 
+}
