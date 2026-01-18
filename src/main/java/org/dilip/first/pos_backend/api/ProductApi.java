@@ -37,15 +37,6 @@ public class ProductApi {
         return productFlow.create(clientId, name, barcode, mrp);
     }
 
-    private String buildDuplicateBarcodeMessage(ProductEntity existing) {
-
-        ClientEntity client = clientDao.findById(ClientEntity.class, existing.getClientId());
-
-        String clientName = (client != null) ? client.getName() : String.valueOf(existing.getClientId());
-
-        return "Product barcode already exists for client: " + clientName;
-    }
-
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
         ProductEntity product = productDao.findById(ProductEntity.class, id);
@@ -83,5 +74,14 @@ public class ProductApi {
 
     public List<ProductEntity> search(Long id, Long clientId, String name, String barcode, int page, int size) {
         return productDao.search(id, clientId, name, barcode, page, size);
+    }
+
+    private String buildDuplicateBarcodeMessage(ProductEntity existing) {
+
+        ClientEntity client = clientDao.findById(ClientEntity.class, existing.getClientId());
+
+        String clientName = (client != null) ? client.getName() : String.valueOf(existing.getClientId());
+
+        return "Product barcode already exists for client: " + clientName;
     }
 }

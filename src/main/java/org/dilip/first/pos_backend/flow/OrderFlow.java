@@ -8,7 +8,6 @@ import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.model.orders.OrderItemForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -32,37 +31,32 @@ public class OrderFlow {
     @Autowired
     private OrderItemDao orderItemDao;
 
-    public OrderEntity placeOrder(List<OrderItemForm> items) {
+    public OrderEntity placeOrder(List<OrderItemEntity> items) {
 
         double total = 0;
 
-        for (OrderItemForm form : items) {
+        for (OrderItemEntity item : items) {
 
-            ProductEntity product = productApi.getByBarcode(form.getBarcode());
+            ProductEntity product = productApi.getByBarcode(item.getBarcode());
 
-            if (form.getSellingPrice() < product.getMrp()) {
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Selling price below MRP for barcode " + product.getBarcode());
+            if (item.getSellingPrice() < product.getMrp()) {
+                throw new ApiException( HttpStatus.BAD_REQUEST, "Selling price below MRP for barcode " + product.getBarcode());
             }
 
-            inventoryApi.validateAvailability(product.getBarcode(), form.getQuantity());
+            inventoryApi.validateAvailability(product.getBarcode(), item.getQuantity());
 
-            total += form.getQuantity() * form.getSellingPrice();
+            total += item.getQuantity() * item.getSellingPrice();
         }
 
         OrderEntity order = orderApi.createOrder(total);
+        for (OrderItemEntity item : items) {
 
-        for (OrderItemForm form : items) {
+            ProductEntity product = productApi.getByBarcode(item.getBarcode());
 
-            ProductEntity product = productApi.getByBarcode(form.getBarcode());
+            inventoryApi.reduce(product.getBarcode(), item.getQuantity());
 
-            inventoryApi.reduce(product.getBarcode(), form.getQuantity());
-
-            OrderItemEntity item = new OrderItemEntity();
             item.setOrderId(order.getId());
             item.setProductId(product.getId());
-            item.setBarcode(product.getBarcode());
-            item.setQuantity(form.getQuantity());
-            item.setSellingPrice(form.getSellingPrice());
 
             orderItemDao.save(item);
         }

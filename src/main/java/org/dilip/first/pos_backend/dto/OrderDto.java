@@ -8,6 +8,7 @@ import org.dilip.first.pos_backend.flow.OrderFlow;
 import org.dilip.first.pos_backend.model.orders.OrderData;
 import org.dilip.first.pos_backend.model.orders.OrderItemData;
 import org.dilip.first.pos_backend.model.orders.OrderForm;
+import org.dilip.first.pos_backend.model.orders.OrderItemForm;
 import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,15 @@ public class OrderDto {
     private OrderApi orderApi;
 
     public OrderData create(OrderForm form) {
-        OrderEntity order = orderFlow.placeOrder(form.getItems());
-        return convertOrderEntityToOrderData(order);
+
+        List<OrderItemEntity> entities = form.getItems()
+                .stream()
+                .map(this::convertToEntity)
+                .toList();
+
+        OrderEntity order = orderFlow.placeOrder(entities);
+
+        return EntityToData.convertOrderEntityToOrderData(order);
     }
 
     public OrderData getById(Long id) {
@@ -79,5 +87,13 @@ public class OrderDto {
                 .stream()
                 .map(EntityToData::convertOrderEntityToOrderData)
                 .toList();
+    }
+
+    private OrderItemEntity convertToEntity(OrderItemForm form) {
+        OrderItemEntity entity = new OrderItemEntity();
+        entity.setBarcode(form.getBarcode());
+        entity.setQuantity(form.getQuantity());
+        entity.setSellingPrice(form.getSellingPrice());
+        return entity;
     }
 }

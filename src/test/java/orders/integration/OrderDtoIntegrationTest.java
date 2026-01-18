@@ -58,7 +58,7 @@ public class OrderDtoIntegrationTest {
         ProductForm productForm = new ProductForm();
         productForm.setClientId(clientId);
         productForm.setName("Test Product");
-        productForm.setBarcode("BARCODE123");
+        productForm.setBarcode("barcode123");
         productForm.setMrp(100.00);
         productId = productDto.create(productForm).getId();
 
@@ -199,7 +199,7 @@ public class OrderDtoIntegrationTest {
         OrderForm form = new OrderForm();
         form.setItems(List.of(item));
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ApiException.class, () -> {
             orderDto.create(form);
         });
     }
