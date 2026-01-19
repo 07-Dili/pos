@@ -54,7 +54,6 @@ public class ProductApi {
         return productDao.search(id, clientId, name, barcode, page, size);
     }
 
-    //we need this method because we dont need any exception to throw for update method
     public ProductEntity getByBarcode(String barcode) {
         return productDao.findByBarcode(barcode);
     }

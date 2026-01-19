@@ -1,7 +1,9 @@
 package org.dilip.first.pos_backend.flow;
 
+import org.dilip.first.pos_backend.api.InventoryApi;
 import org.dilip.first.pos_backend.api.OrderApi;
 import org.dilip.first.pos_backend.api.ProductApi;
+import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
@@ -24,7 +26,9 @@ public class OrderFlow {
     private ProductApi productApi;
 
     @Autowired
-    private InventoryFlow inventoryFlow;
+    private InventoryApi inventoryApi;
+
+
 
     public OrderEntity placeOrder(List<OrderItemEntity> items) {
 
@@ -38,7 +42,19 @@ public class OrderFlow {
                 throw new ApiException( HttpStatus.BAD_REQUEST, "Selling price below MRP for barcode " + product.getBarcode());
             }
 
-            inventoryFlow.validateAvailability(product.getBarcode(), item.getQuantity());
+            ProductEntity prod = productApi.getByBarcode(item.getBarcode());
+            if (prod == null) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + item.getBarcode());
+            }
+
+            InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
+            if (inventory == null) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + item.getBarcode());
+            }
+
+            if (inventory.getQuantity() < item.getQuantity()) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
+            }
 
             total += item.getQuantity() * item.getSellingPrice();
         }
@@ -48,7 +64,21 @@ public class OrderFlow {
 
             ProductEntity product = productApi.getByBarcode(item.getBarcode());
 
-            inventoryFlow.reduceByBarcode(product.getBarcode(), item.getQuantity());
+            if (product == null) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + item.getBarcode());
+            }
+
+            InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
+
+            if (inventory == null) {
+                throw new ApiException( HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + item.getBarcode());
+            }
+
+            if (inventory.getQuantity() < item.getQuantity()) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
+            }
+
+            inventoryApi.reduce(inventory,inventory.getQuantity() - item.getQuantity());
 
             orderApi.saveOrderItem(item,order.getId(),product.getId());
 

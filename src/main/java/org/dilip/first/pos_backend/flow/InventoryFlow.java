@@ -54,44 +54,4 @@ public class InventoryFlow {
         return null;
 
     }
-    public void validateAvailability(String barcode, Long quantity) {
-
-        ProductEntity product = productApi.getByBarcode(barcode);
-        if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
-        }
-
-        InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
-        if (inventory == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
-        }
-
-        if (inventory.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
-        }
-    }
-
-    public void reduceByBarcode(String barcode, Long quantity) {
-
-        ProductEntity product = productApi.getByBarcode(barcode);
-
-        if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
-        }
-
-        InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
-
-        if (inventory == null) {
-            throw new ApiException( HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
-        }
-
-        if (inventory.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
-        }
-
-        inventoryApi.reduce(inventory,inventory.getQuantity() - quantity);
-
-    }
-
-
 }
