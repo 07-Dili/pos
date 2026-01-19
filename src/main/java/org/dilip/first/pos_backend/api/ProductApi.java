@@ -38,14 +38,6 @@ public class ProductApi {
         return productDao.save(product);
     }
 
-    public ProductEntity getByBarcode(String barcode) {
-        ProductEntity product = productDao.findByBarcode(barcode);
-        if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
-        }
-        return product;
-    }
-
     public ProductEntity getById(Long id) {
         ProductEntity product = productDao.findById(ProductEntity.class, id);
         if (product == null) {
@@ -63,7 +55,7 @@ public class ProductApi {
     }
 
     //we need this method because we dont need any exception to throw for update method
-    public ProductEntity findByBarcode(String barcode) {
+    public ProductEntity getByBarcode(String barcode) {
         return productDao.findByBarcode(barcode);
     }
 }

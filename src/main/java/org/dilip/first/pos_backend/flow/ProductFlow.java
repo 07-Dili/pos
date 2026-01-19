@@ -22,9 +22,7 @@ public class ProductFlow {
 
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
-        if (clientApi.getById(clientId) == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
-        }
+        validateClientExist(clientId);
 
         ProductEntity existing = productApi.getByBarcode(barcode);
 
@@ -37,21 +35,25 @@ public class ProductFlow {
 
     public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
-        if (clientApi.getById(clientId) == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
-        }
+        validateClientExist(clientId);
 
         ProductEntity product = productApi.getById(id);
         if (product == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
         }
 
-        ProductEntity existing = productApi.findByBarcode(barcode);
+        ProductEntity existing = productApi.getByBarcode(barcode);
         if (existing != null && !existing.getId().equals(id)) {
             throw new ApiException( HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
         }
 
         return productApi.update(product,clientId,name,mrp,barcode);
+    }
+
+    private void validateClientExist(Long clientId) {
+        if (clientApi.getById(clientId) == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
+        }
     }
 
     public String buildDuplicateBarcodeMessage(ProductEntity existing) {

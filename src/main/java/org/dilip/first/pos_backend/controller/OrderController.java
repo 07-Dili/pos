@@ -13,7 +13,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
-public class OrderController {
+public class
+OrderController {
 
     @Autowired
     private OrderDto orderDto;
