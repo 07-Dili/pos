@@ -3,6 +3,7 @@ package org.dilip.first.pos_backend.dto;
 import org.dilip.first.pos_backend.api.ProductApi;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.dilip.first.pos_backend.flow.ProductFlow;
 import org.dilip.first.pos_backend.model.error.ProductUploadError;
 import org.dilip.first.pos_backend.model.products.ProductData;
 import org.dilip.first.pos_backend.model.products.ProductForm;
@@ -28,8 +29,11 @@ public class ProductDto {
     @Autowired
     private ProductApi productApi;
 
+    @Autowired
+    private ProductFlow productFlow;
+
     public ProductData create(ProductForm form) {
-        ProductEntity entity = productApi.create( form.getClientId(), form.getName().trim().toLowerCase(),
+        ProductEntity entity = productFlow.create( form.getClientId(), form.getName().trim().toLowerCase(),
                 form.getBarcode().trim().toLowerCase(),
                 form.getMrp()
         );
@@ -47,9 +51,7 @@ public class ProductDto {
     }
 
     public ProductData update(Long id, ProductUpdateForm form) {
-        ProductEntity entity = productApi.update(id, form.getClientId(), form.getName(), form.getMrp(),
-                form.getBarcode()
-        );
+        ProductEntity entity = productFlow.update(id, form.getClientId(), form.getName(), form.getMrp(), form.getBarcode());
         return convertProductEntityToData(entity);
     }
 

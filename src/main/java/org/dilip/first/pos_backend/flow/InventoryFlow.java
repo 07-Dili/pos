@@ -1,7 +1,7 @@
 package org.dilip.first.pos_backend.flow;
 
-import org.dilip.first.pos_backend.dao.InventoryDao;
-import org.dilip.first.pos_backend.dao.ProductDao;
+import org.dilip.first.pos_backend.api.InventoryApi;
+import org.dilip.first.pos_backend.api.ProductApi;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
@@ -15,52 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class InventoryFlow {
 
     @Autowired
-    private InventoryDao inventoryDao;
+    private ProductApi productApi;
 
     @Autowired
-    private ProductDao productDao;
-
-    public void reduceByBarcode(String barcode, Long quantity) {
-
-        ProductEntity product = productDao.findByBarcode(barcode);
-
-        if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
-        }
-
-        InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
-
-        if (inventory == null) {
-            throw new ApiException( HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
-        }
-
-        if (inventory.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
-        }
-
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventoryDao.save(inventory);
-    }
-
+    private InventoryApi inventoryApi;
 
     public InventoryEntity create(Long productId, Long quantity) {
 
-        ProductEntity product = productDao.findById(ProductEntity.class, productId);
+        if (quantity == null || quantity <= 0) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid quantity " + quantity);
+        }
+
+        ProductEntity product = productApi.getById(productId);
+
         if (product == null) {
             throw new RuntimeException("Product not found " + productId);
         }
 
-        InventoryEntity inventory = inventoryDao.findByProductId(productId);
-
-        if (inventory == null) {
-            inventory = new InventoryEntity();
-            inventory.setProduct(product);
-            inventory.setQuantity(quantity);
-        } else {
-            inventory.setQuantity(inventory.getQuantity() + quantity);
-        }
-
-        return inventoryDao.save(inventory);
+        return inventoryApi.create(product,productId, quantity);
     }
 
     public String uploadInventoryRow(String barcode, Long quantity) {
@@ -73,32 +45,23 @@ public class InventoryFlow {
             return "Invalid quantity: " + quantity;
         }
 
-        ProductEntity product = productDao.findByBarcode(barcode);
+        ProductEntity product = productApi.getByBarcode(barcode);
         if (product == null) {
             return "Product not found for barcode: " + barcode;
         }
 
-        InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
-
-        if (inventory == null) {
-            inventory = new InventoryEntity();
-            inventory.setProduct(product);
-            inventory.setQuantity(quantity);
-        } else {
-            inventory.setQuantity(inventory.getQuantity() + quantity);
-        }
-
-        inventoryDao.save(inventory);
+        inventoryApi.uploadInventoryRow(product,quantity);
         return null;
+
     }
     public void validateAvailability(String barcode, Long quantity) {
 
-        ProductEntity product = productDao.findByBarcode(barcode);
+        ProductEntity product = productApi.getByBarcode(barcode);
         if (product == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
         }
 
-        InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
+        InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
         if (inventory == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
         }
@@ -106,6 +69,28 @@ public class InventoryFlow {
         if (inventory.getQuantity() < quantity) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
         }
+    }
+
+    public void reduceByBarcode(String barcode, Long quantity) {
+
+        ProductEntity product = productApi.getByBarcode(barcode);
+
+        if (product == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found for barcode: " + barcode);
+        }
+
+        InventoryEntity inventory = inventoryApi.findByProductId(product.getId());
+
+        if (inventory == null) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, "Inventory not found for product barcode: " + barcode);
+        }
+
+        if (inventory.getQuantity() < quantity) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Insufficient inventory for product: " + product.getName());
+        }
+
+        inventoryApi.reduce(inventory,inventory.getQuantity() - quantity);
+
     }
 
 

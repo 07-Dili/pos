@@ -3,6 +3,7 @@ package org.dilip.first.pos_backend.dto;
 import org.dilip.first.pos_backend.api.InventoryApi;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
+import org.dilip.first.pos_backend.flow.InventoryFlow;
 import org.dilip.first.pos_backend.model.error.InventoryUploadError;
 import org.dilip.first.pos_backend.model.inventory.InventoryFilterResponseData;
 import org.dilip.first.pos_backend.model.inventory.InventoryData;
@@ -32,6 +33,9 @@ public class InventoryDto {
     @Autowired
     private InventoryApi inventoryApi;
 
+    @Autowired
+    private InventoryFlow inventoryFlow ;
+
     public void uploadInventory(MultipartFile file) {
 
         List<String[]> rows = TsvUtil.parse(file, 5000);
@@ -43,7 +47,7 @@ public class InventoryDto {
             String barcode = row.length > 0 ? row[0].trim() : null;
             Long quantity = row.length > 1 ? parseLong(row[1]) : null;
 
-            String error = inventoryApi.uploadInventoryRow(barcode, quantity);
+            String error = inventoryFlow.uploadInventoryRow(barcode, quantity);
 
             if (error != null) {
                 errors.add(new InventoryUploadError(lineNumber, barcode, error));
@@ -51,14 +55,13 @@ public class InventoryDto {
 
             lineNumber++;
         }
-
         if (!errors.isEmpty()) {
             throw buildInventoryUploadException(errors);
         }
     }
 
     public InventoryData create(InventoryCreateForm form) {
-        InventoryEntity entity = inventoryApi.create(form.getProductId(), form.getQuantity());
+        InventoryEntity entity = inventoryFlow.create(form.getProductId(), form.getQuantity());
         return convertInventoryEntityToData(entity);
     }
 

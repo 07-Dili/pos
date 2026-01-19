@@ -1,10 +1,8 @@
 package org.dilip.first.pos_backend.flow;
 
-import org.dilip.first.pos_backend.constants.OrderStatus;
-import org.dilip.first.pos_backend.dao.InvoiceDao;
-import org.dilip.first.pos_backend.dao.OrderDao;
-import org.dilip.first.pos_backend.dao.OrderItemDao;
-import org.dilip.first.pos_backend.dao.ProductDao;
+import org.dilip.first.pos_backend.api.InvoiceApi;
+import org.dilip.first.pos_backend.api.OrderApi;
+import org.dilip.first.pos_backend.api.ProductApi;
 import org.dilip.first.pos_backend.entity.*;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.model.invoice.InvoiceItemForm;
@@ -14,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,45 +20,37 @@ import java.util.stream.Collectors;
 public class InvoiceFlow {
 
     @Autowired
-    private OrderDao orderDao;
+    private InvoiceApi invoiceApi;
 
     @Autowired
-    private OrderItemDao orderItemDao;
+    private OrderApi orderApi;
 
     @Autowired
-    private ProductDao productDao;
-
-    @Autowired
-    private InvoiceDao invoiceDao;
+    private ProductApi productApi;
 
     @Autowired
     private InvoiceServiceUtil invoiceServiceUtil;
 
     public InvoiceEntity generateInvoice(Long orderId) {
 
-        InvoiceEntity existingInvoice = invoiceDao.findByOrderId(orderId);
+        InvoiceEntity existingInvoice = invoiceApi.getByOrderIdWithoutException(orderId);
         if (existingInvoice != null) {
             return existingInvoice;
         }
 
-        OrderEntity order = orderDao.findById(OrderEntity.class,orderId);
+        OrderEntity order = orderApi.getById(orderId);
         if (order == null) {
             throw new ApiException( HttpStatus.BAD_REQUEST, "Order not found with id: " + orderId);
         }
 
-        List<OrderItemEntity> orderItems = orderItemDao.findByOrderId(orderId);
+        List<OrderItemEntity> orderItems = orderApi.findOrderItemsByOrderId(orderId);
 
         InvoiceRequestForm request = buildInvoiceRequest(order, orderItems);
         String pdfPath = invoiceServiceUtil.generateAndSavePdf(request);
+        orderApi.ChangeOrderStatusToInvoice(order);
 
-        order.setStatus(OrderStatus.INVOICED);
-        orderDao.save(order);
+        return invoiceApi.generateInvoice(orderId, pdfPath);
 
-        InvoiceEntity invoice = new InvoiceEntity();
-        invoice.setOrderId(orderId);
-        invoice.setPdfPath(pdfPath);
-
-        return invoiceDao.save(invoice);
     }
 
     private InvoiceRequestForm buildInvoiceRequest(OrderEntity order, List<OrderItemEntity> orderItems) {
@@ -80,7 +68,7 @@ public class InvoiceFlow {
 
     private InvoiceItemForm toInvoiceItem(OrderItemEntity orderItem) {
 
-        ProductEntity product = productDao.findById(ProductEntity.class,orderItem.getProductId());
+        ProductEntity product = productApi.getById(orderItem.getProductId());
         String productName = product != null ? product.getName() : "Unknown Product";
 
         InvoiceItemForm form = new InvoiceItemForm();

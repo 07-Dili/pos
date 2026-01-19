@@ -2,7 +2,9 @@ package org.dilip.first.pos_backend.api;
 
 import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.OrderDao;
+import org.dilip.first.pos_backend.dao.OrderItemDao;
 import org.dilip.first.pos_backend.entity.OrderEntity;
+import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ public class OrderApi {
 
     @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    private OrderItemDao orderItemDao;
 
     public OrderEntity getById(Long orderId) {
         OrderEntity order = orderDao.findById(OrderEntity.class, orderId);
@@ -47,6 +52,22 @@ public class OrderApi {
         order.setStatus(OrderStatus.CREATED);
         order.setTotalAmount(totalAmount);
         return orderDao.save(order);
+    }
+
+    public void ChangeOrderStatusToInvoice(OrderEntity order)
+    {
+        order.setStatus(OrderStatus.INVOICED);
+        orderDao.save(order);
+    }
+
+    public void saveOrderItem(OrderItemEntity orderItem,Long orderId,Long productId) {
+        orderItem.setOrderId(orderId);
+        orderItem.setProductId(productId);
+        orderItemDao.save(orderItem);
+    }
+
+    public List<OrderItemEntity> findOrderItemsByOrderId(Long orderId) {
+        return orderItemDao.findByOrderId(orderId);
     }
 }
 

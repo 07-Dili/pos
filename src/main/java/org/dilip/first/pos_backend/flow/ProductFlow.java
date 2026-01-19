@@ -3,8 +3,6 @@ package org.dilip.first.pos_backend.flow;
 import jakarta.transaction.Transactional;
 import org.dilip.first.pos_backend.api.ClientApi;
 import org.dilip.first.pos_backend.api.ProductApi;
-import org.dilip.first.pos_backend.dao.ClientDao;
-import org.dilip.first.pos_backend.dao.ProductDao;
 import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
@@ -17,39 +15,52 @@ import org.springframework.stereotype.Component;
 public class ProductFlow {
 
     @Autowired
-    private ClientDao clientDao;
+    private ClientApi clientApi;
 
     @Autowired
-    private ProductDao productDao;
+    private ProductApi productApi;
 
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
-        if (clientDao.findById(ClientEntity.class,clientId) == null) {
+        if (clientApi.getById(clientId) == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
         }
 
-        ProductEntity entity = new ProductEntity();
-        entity.setClientId(clientId);
-        entity.setName(name);
-        entity.setBarcode(barcode);
-        entity.setMrp(mrp);
+        ProductEntity existing = productApi.getByBarcode(barcode);
 
-        return productDao.save(entity);
+        if (existing != null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST,buildDuplicateBarcodeMessage(existing));
+        }
+
+        return productApi.create(clientId, name, barcode, mrp);
     }
 
-    public ProductEntity update(ProductEntity product, Long clientId, String name, Double mrp, String barcode) {
+    public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
 
-        if (clientDao.findById(ClientEntity.class,clientId) == null) {
+        if (clientApi.getById(clientId) == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client not found with id: " + clientId);
         }
 
-        product.setClientId(clientId);
-        product.setName(name);
-        product.setMrp(mrp);
-        product.setBarcode(barcode);
+        ProductEntity product = productApi.getById(id);
+        if (product == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
+        }
 
-        return productDao.save(product);
+        ProductEntity existing = productApi.findByBarcode(barcode);
+        if (existing != null && !existing.getId().equals(id)) {
+            throw new ApiException( HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
+        }
+
+        return productApi.update(product,clientId,name,mrp,barcode);
     }
 
+    public String buildDuplicateBarcodeMessage(ProductEntity existing) {
+
+        ClientEntity client = clientApi.getById(existing.getClientId());
+
+        String clientName = (client != null) ? client.getName() : String.valueOf(existing.getClientId());
+
+        return "Product barcode already exists for client: " + clientName;
+    }
 }
 

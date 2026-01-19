@@ -1,11 +1,8 @@
 package org.dilip.first.pos_backend.api;
 
-import org.dilip.first.pos_backend.dao.ClientDao;
 import org.dilip.first.pos_backend.dao.ProductDao;
-import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.flow.ProductFlow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,36 +17,25 @@ public class ProductApi {
     @Autowired
     private ProductDao productDao;
 
-    @Autowired
-    private ProductFlow productFlow;
-
-    @Autowired
-    private ClientDao clientDao;
-
     public ProductEntity create(Long clientId, String name, String barcode, Double mrp) {
 
-        ProductEntity existing = productDao.findByBarcode(barcode);
+        ProductEntity entity = new ProductEntity();
+        entity.setClientId(clientId);
+        entity.setName(name);
+        entity.setBarcode(barcode);
+        entity.setMrp(mrp);
 
-        if (existing != null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
-        }
-
-        return productFlow.create(clientId, name, barcode, mrp);
+        return productDao.save(entity);
     }
 
-    public ProductEntity update(Long id, Long clientId, String name, Double mrp, String barcode) {
+    public ProductEntity update(ProductEntity product,Long clientId, String name, Double mrp, String barcode) {
 
-        ProductEntity product = productDao.findById(ProductEntity.class, id);
-        if (product == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product not found");
-        }
+        product.setClientId(clientId);
+        product.setName(name);
+        product.setMrp(mrp);
+        product.setBarcode(barcode);
 
-        ProductEntity existing = productDao.findByBarcode(barcode);
-        if (existing != null && !existing.getId().equals(id)) {
-            throw new ApiException( HttpStatus.BAD_REQUEST, buildDuplicateBarcodeMessage(existing));
-        }
-
-        return productFlow.update(product, clientId, name, mrp, barcode);
+        return productDao.save(product);
     }
 
     public ProductEntity getByBarcode(String barcode) {
@@ -76,12 +62,8 @@ public class ProductApi {
         return productDao.search(id, clientId, name, barcode, page, size);
     }
 
-    private String buildDuplicateBarcodeMessage(ProductEntity existing) {
-
-        ClientEntity client = clientDao.findById(ClientEntity.class, existing.getClientId());
-
-        String clientName = (client != null) ? client.getName() : String.valueOf(existing.getClientId());
-
-        return "Product barcode already exists for client: " + clientName;
+    //we need this method because we dont need any exception to throw for update method
+    public ProductEntity findByBarcode(String barcode) {
+        return productDao.findByBarcode(barcode);
     }
 }

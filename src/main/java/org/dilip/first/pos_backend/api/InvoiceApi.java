@@ -1,6 +1,8 @@
 package org.dilip.first.pos_backend.api;
 
+import org.dilip.first.pos_backend.constants.OrderStatus;
 import org.dilip.first.pos_backend.dao.InvoiceDao;
+import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.flow.InvoiceFlow;
 import org.dilip.first.pos_backend.entity.InvoiceEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
@@ -16,9 +18,6 @@ public class InvoiceApi {
     @Autowired
     private InvoiceDao invoiceDao;
 
-    @Autowired
-    private InvoiceFlow invoiceFlow;
-
     public InvoiceEntity getByOrderId(Long orderId) {
         InvoiceEntity invoice = invoiceDao.findByOrderId(orderId);
         if (invoice == null) {
@@ -27,7 +26,16 @@ public class InvoiceApi {
         return invoice;
     }
 
-    public InvoiceEntity generateInvoice(Long orderId) {
-        return invoiceFlow.generateInvoice(orderId);
+    public InvoiceEntity getByOrderIdWithoutException(Long orderId) {
+        return invoiceDao.findByOrderId(orderId);
+    }
+
+    public InvoiceEntity generateInvoice(Long orderId,String pdfPath) {
+
+        InvoiceEntity invoice = new InvoiceEntity();
+        invoice.setOrderId(orderId);
+        invoice.setPdfPath(pdfPath);
+
+        return invoiceDao.save(invoice);
     }
 }

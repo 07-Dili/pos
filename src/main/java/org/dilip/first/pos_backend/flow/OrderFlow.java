@@ -1,9 +1,7 @@
 package org.dilip.first.pos_backend.flow;
 
-import org.dilip.first.pos_backend.api.InventoryApi;
 import org.dilip.first.pos_backend.api.OrderApi;
 import org.dilip.first.pos_backend.api.ProductApi;
-import org.dilip.first.pos_backend.dao.OrderItemDao;
 import org.dilip.first.pos_backend.entity.OrderEntity;
 import org.dilip.first.pos_backend.entity.OrderItemEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
@@ -26,10 +24,7 @@ public class OrderFlow {
     private ProductApi productApi;
 
     @Autowired
-    private InventoryApi inventoryApi;
-
-    @Autowired
-    private OrderItemDao orderItemDao;
+    private InventoryFlow inventoryFlow;
 
     public OrderEntity placeOrder(List<OrderItemEntity> items) {
 
@@ -43,7 +38,7 @@ public class OrderFlow {
                 throw new ApiException( HttpStatus.BAD_REQUEST, "Selling price below MRP for barcode " + product.getBarcode());
             }
 
-            inventoryApi.validateAvailability(product.getBarcode(), item.getQuantity());
+            inventoryFlow.validateAvailability(product.getBarcode(), item.getQuantity());
 
             total += item.getQuantity() * item.getSellingPrice();
         }
@@ -53,18 +48,16 @@ public class OrderFlow {
 
             ProductEntity product = productApi.getByBarcode(item.getBarcode());
 
-            inventoryApi.reduce(product.getBarcode(), item.getQuantity());
+            inventoryFlow.reduceByBarcode(product.getBarcode(), item.getQuantity());
 
-            item.setOrderId(order.getId());
-            item.setProductId(product.getId());
+            orderApi.saveOrderItem(item,order.getId(),product.getId());
 
-            orderItemDao.save(item);
         }
 
         return order;
     }
 
     public List<OrderItemEntity> getItemsByOrderId(Long orderId) {
-        return orderItemDao.findByOrderId(orderId);
+        return orderApi.findOrderItemsByOrderId(orderId);
     }
 }
