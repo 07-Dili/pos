@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -57,6 +58,10 @@ public class ClientApi {
         existing.setEmail(email);
         existing.setPhone(phone);
         return clientDao.save(existing);
+    }
+
+    public List<ClientEntity> getAllByIds(Set<Long> ids) {
+        return clientDao.getAllByIds(ids);
     }
 
     public ClientEntity getById(Long id) {

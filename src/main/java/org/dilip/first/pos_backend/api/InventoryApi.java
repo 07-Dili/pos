@@ -4,7 +4,6 @@ import org.dilip.first.pos_backend.dao.InventoryDao;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
 import org.dilip.first.pos_backend.entity.ProductEntity;
 import org.dilip.first.pos_backend.exception.ApiException;
-import org.dilip.first.pos_backend.flow.InventoryFlow;
 import org.dilip.first.pos_backend.model.inventory.InventoryFilterResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +36,8 @@ public class InventoryApi {
         return inventoryDao.filter(productId, barcode, name, page, size);
     }
 
-    public void uploadInventoryRow(ProductEntity product,Long quantity) {
+    public void uploadInventoryRow(ProductEntity product, Long quantity) {
+
         InventoryEntity inventory = inventoryDao.findByProductId(product.getId());
 
         if (inventory == null) {
@@ -47,8 +47,10 @@ public class InventoryApi {
         } else {
             inventory.setQuantity(inventory.getQuantity() + quantity);
         }
+
         inventoryDao.save(inventory);
     }
+
 
     public InventoryEntity create(ProductEntity product,Long productId, Long quantity) {
 
@@ -79,12 +81,7 @@ public class InventoryApi {
         return inventoryDao.save(inventory);
     }
 
-    public InventoryEntity findByProductId(Long productId) {
-        return inventoryDao.findByProductId(productId);
-    }
-
-    public void reduce(InventoryEntity inventory, Long quantity) {
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventoryDao.save(inventory);
+    public List<InventoryEntity> getAllWithoutPagination(List<Long> productIds) {
+        return inventoryDao.getAllWithoutPagination(productIds);
     }
 }

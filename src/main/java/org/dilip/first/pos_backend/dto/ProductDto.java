@@ -34,8 +34,7 @@ public class ProductDto {
 
     public ProductData create(ProductForm form) {
         ProductEntity entity = productFlow.create( form.getClientId(), form.getName().trim().toLowerCase(),
-                form.getBarcode().trim().toLowerCase(),
-                form.getMrp()
+                form.getBarcode().trim().toLowerCase(),form.getMrp()
         );
         return convertProductEntityToData(entity);
     }
@@ -65,21 +64,12 @@ public class ProductDto {
     public void uploadProductMaster(MultipartFile file) {
 
         List<ProductForm> forms = ProductTsvParser.parse(file);
-        List<ProductUploadError> errors = new ArrayList<>();
 
-        int lineNumber = 1;
-
-        for (ProductForm form : forms) {
-            try {
-                create(form);
-            } catch (ApiException e) {
-                errors.add(new ProductUploadError(lineNumber,form.getBarcode(), e.getMessage()));
-            }
-            lineNumber++;
-        }
+        List<ProductUploadError> errors = productFlow.uploadProducts(forms);
 
         if (!errors.isEmpty()) {
             throw buildProductUploadException(errors);
         }
     }
+
 }

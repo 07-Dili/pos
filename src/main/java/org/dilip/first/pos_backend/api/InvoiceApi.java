@@ -19,7 +19,7 @@ public class InvoiceApi {
     private InvoiceDao invoiceDao;
 
     public InvoiceEntity getByOrderId(Long orderId) {
-        InvoiceEntity invoice = invoiceDao.findByOrderId(orderId);
+        InvoiceEntity invoice = getByOrderIdWithoutException(orderId);
         if (invoice == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Invoice not found for order id: " + orderId);
         }

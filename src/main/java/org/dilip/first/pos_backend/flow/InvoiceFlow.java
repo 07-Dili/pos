@@ -47,7 +47,7 @@ public class InvoiceFlow {
 
         InvoiceRequestForm request = buildInvoiceRequest(order, orderItems);
         String pdfPath = invoiceServiceUtil.generateAndSavePdf(request);
-        orderApi.ChangeOrderStatusToInvoice(order);
+        orderApi.changeOrderStatusToInvoice(order);
 
         return invoiceApi.generateInvoice(orderId, pdfPath);
 

@@ -4,6 +4,7 @@ import org.dilip.first.pos_backend.entity.ClientEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ClientDao extends AbstractDao<ClientEntity> {
@@ -11,6 +12,8 @@ public class ClientDao extends AbstractDao<ClientEntity> {
     static final String FIND_BY_NAME_QUERY = "SELECT c FROM ClientEntity c WHERE LOWER(c.name) = LOWER(:name)";
 
     static final String FIND_BY_EMAIL_QUERY = " SELECT c FROM ClientEntity c WHERE LOWER(c.email) = LOWER(:email)";
+
+    static final String FIND_ALL_BY_IDS_QUERY = "SELECT c FROM ClientEntity c WHERE c.id in (:ids)";
 
     static final String SEARCH_QUERY = """
         SELECT c FROM ClientEntity c
@@ -32,6 +35,11 @@ public class ClientDao extends AbstractDao<ClientEntity> {
                 .setParameter("email", email).getResultList();
 
         return result.isEmpty() ? null : result.get(0);
+    }
+
+    public List<ClientEntity> getAllByIds(Set<Long> ids) {
+        return em.createQuery(FIND_ALL_BY_IDS_QUERY ,ClientEntity.class)
+                .setParameter("ids", ids).getResultList();
     }
 
     public List<ClientEntity> search( Long id, String name, String email, int page, int size) {

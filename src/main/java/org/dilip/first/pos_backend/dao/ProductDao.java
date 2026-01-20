@@ -24,6 +24,8 @@ public class ProductDao extends AbstractDao<ProductEntity> {
 
     static final String SEARCH_ORDER_BY = " ORDER BY p.id";
 
+    static final String GET_ALL_WITHOUT_PAGINATION = "SELECT p FROM ProductEntity p where p.barcode in (:barcodes)";
+
     public ProductEntity findByBarcode(String barcode) {
         List<ProductEntity> result = em.createQuery( FIND_BY_BARCODE_QUERY, ProductEntity.class)
                 .setParameter("barcode", barcode)
@@ -62,5 +64,9 @@ public class ProductDao extends AbstractDao<ProductEntity> {
         query.setMaxResults(size);
 
         return query.getResultList();
+    }
+
+    public List<ProductEntity> getAllWithoutPagination(List<String> barcodes) {
+        return em.createQuery(GET_ALL_WITHOUT_PAGINATION, ProductEntity.class).setParameter("barcodes",barcodes).getResultList();
     }
 }

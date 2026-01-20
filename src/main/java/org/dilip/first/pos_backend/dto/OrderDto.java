@@ -32,10 +32,7 @@ public class OrderDto {
 
     public OrderData create(OrderForm form) {
 
-        List<OrderItemEntity> entities = form.getItems()
-                .stream()
-                .map(this::convertToEntity)
-                .toList();
+        List<OrderItemEntity> entities = form.getItems().stream().map(this::convertToEntity).toList();
 
         OrderEntity order = orderFlow.placeOrder(entities);
 

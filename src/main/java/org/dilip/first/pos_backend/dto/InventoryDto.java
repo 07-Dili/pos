@@ -2,7 +2,6 @@ package org.dilip.first.pos_backend.dto;
 
 import org.dilip.first.pos_backend.api.InventoryApi;
 import org.dilip.first.pos_backend.entity.InventoryEntity;
-import org.dilip.first.pos_backend.exception.ApiException;
 import org.dilip.first.pos_backend.flow.InventoryFlow;
 import org.dilip.first.pos_backend.model.error.InventoryUploadError;
 import org.dilip.first.pos_backend.model.inventory.InventoryFilterResponseData;
@@ -15,17 +14,11 @@ import org.dilip.first.pos_backend.util.conversion.EntityToData;
 import org.dilip.first.pos_backend.util.helper.StringUtil;
 import org.dilip.first.pos_backend.util.helper.TsvUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.dilip.first.pos_backend.util.conversion.EntityToData.convertInventoryEntityToData;
 import static org.dilip.first.pos_backend.util.helper.ExceptionBuilder.buildInventoryUploadException;
-import static org.dilip.first.pos_backend.util.helper.IntegerUtil.parseLong;
 
 @Component
 public class InventoryDto {
@@ -39,26 +32,14 @@ public class InventoryDto {
     public void uploadInventory(MultipartFile file) {
 
         List<String[]> rows = TsvUtil.parse(file, 5000);
-        List<InventoryUploadError> errors = new ArrayList<>();
-        int lineNumber = 1;
 
-        for (String[] row : rows) {
+        List<InventoryUploadError> errors = inventoryFlow.uploadInventory(rows);
 
-            String barcode = row.length > 0 ? row[0].trim() : null;
-            Long quantity = row.length > 1 ? parseLong(row[1]) : null;
-
-            String error = inventoryFlow.uploadInventoryRow(barcode, quantity);
-
-            if (error != null) {
-                errors.add(new InventoryUploadError(lineNumber, barcode, error));
-            }
-
-            lineNumber++;
-        }
         if (!errors.isEmpty()) {
             throw buildInventoryUploadException(errors);
         }
     }
+
 
     public InventoryData create(InventoryCreateForm form) {
         InventoryEntity entity = inventoryFlow.create(form.getProductId(), form.getQuantity());

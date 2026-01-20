@@ -54,7 +54,7 @@ public class OrderApi {
         return orderDao.save(order);
     }
 
-    public void ChangeOrderStatusToInvoice(OrderEntity order)
+    public void changeOrderStatusToInvoice(OrderEntity order)
     {
         order.setStatus(OrderStatus.INVOICED);
         orderDao.save(order);

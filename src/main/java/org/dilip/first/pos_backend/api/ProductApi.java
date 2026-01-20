@@ -57,4 +57,8 @@ public class ProductApi {
     public ProductEntity getByBarcode(String barcode) {
         return productDao.findByBarcode(barcode);
     }
+
+    public List<ProductEntity> getAllWithoutPagination(List<String> barcodes) {
+        return productDao.getAllWithoutPagination(barcodes);
+    }
 }

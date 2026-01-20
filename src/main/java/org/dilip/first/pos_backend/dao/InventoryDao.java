@@ -11,7 +11,7 @@ public class InventoryDao extends AbstractDao<InventoryEntity> {
 
 
     static final String FIND_BY_PRODUCT_ID_QUERY = "SELECT i FROM InventoryEntity i WHERE i.product.id = :productId";
-
+    static final String GET_ALL_INVENTORY_QUERY = "SELECT i FROM InventoryEntity i where i.product.id in (:productIds)";
     static final String FILTER_QUERY = """
         SELECT new InventoryFilterResponseData(p.id,p.clientId,p.name,p.barcode,p.mrp,i.quantity)
         FROM InventoryEntity i
@@ -37,6 +37,13 @@ public class InventoryDao extends AbstractDao<InventoryEntity> {
                 .setParameter("name", name)
                 .setFirstResult(page * size)
                 .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<InventoryEntity> getAllWithoutPagination(List<Long> productIds)
+    {
+        return em.createQuery(GET_ALL_INVENTORY_QUERY, InventoryEntity.class)
+                .setParameter("productIds", productIds)
                 .getResultList();
     }
 }
